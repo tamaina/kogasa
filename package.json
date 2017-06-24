@@ -1,0 +1,27 @@
+{
+  "name": "kogasa",
+  "version": "0.0.0",
+  "description": "【Windows専用】electronで新たなるwaifu2x体験をあなたに",
+  "main": "main.js",
+  "scripts": {
+    "postinstall": "npm i electron-packager -g",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tamaina/kogasa.git"
+  },
+  "keywords": [
+    "waifu2x"
+  ],
+  "author": "tamaina <tamaina@hotmail.co.jp> (https://tmin.xyz/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tamaina/kogasa/issues"
+  },
+  "homepage": "https://github.com/tamaina/kogasa#readme",
+  "devDependencies": {
+    "electron": "^1.6.10",
+    "electron-packager": "^8.7.0"
+  }
+}

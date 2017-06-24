@@ -1,2 +1,7 @@
-# kogasa
-electronで超モダンGUIなwaifu2xを
+# KOGASA
+
+こがさ: electronで超モダンなwaifu2xをあなたに
+
+----
+
+まずelectronの基礎から。

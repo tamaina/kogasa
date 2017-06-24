@@ -1,0 +1,13 @@
+{
+  "i18ntest": {
+    "Hello_World": "こんにちは。",
+    "We_are_using_node_version" : "利用中のnode.jsは、バージョン${process.versions.node}、",
+    "Chrome_version" : "Chromeはバージョン${process.versions.chrome}、",
+    "and_Electron_version" : "Electronはバージョン${process.versions.electron}です。",
+    "text_please_drop" : "ファイルやフォルダーをドロップしてください。",
+    "OSis_platform" : "${process.platform}",
+    "OS_arch_is_arch" : "アーキテクチャ ${process.arch}",
+    "Run_waifu2x" : "実行",
+    "file" : "ファイル"
+  }
+}

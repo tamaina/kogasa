@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>kogasa - waifu2x frontend</title>
+    <script>
+    let _module_exports = module.exports
+    delete module.exports
+    const $ = window.jQuery = require('./assets/jquery/jquery.min.js')
+    module.exports = _module_exports
+    delete _jquery
+    delete _require
+    delete _module_exports
+    const DEBUG = true
+          fs = require('fs')
+          i18n = {}
+          i18n["here"] = require('./locales/' + window.navigator.language + '.json')
+          i18n.ja = require('./locales/ja.json')
+          display_files_chosen_selector = "#files_chosen"
+          display_files_running_selector = "#files_chosen"
+      let files_chosen = new Array
+          files_waifing = new Array
+
+    if(DEBUG) console.log(i18n)
+
+    $(document).on('dragover drop',function(e) {
+      e.preventDefault()
+      return false
+    })
+
+    $(function(){
+
+      function type(file){
+        if(fs.existsSync(file.path) && fs.statSync(file.path).isDirectory()) return "directory"
+        else if(file.type!="") return file.type
+        else return false
+      }
+
+      function changed_files_chosen(){
+        let files_chosen_html = ""
+            delete_html_before = "<a href='javascript:void(0)' class='mdl-button mdl-js-button mdl-button--icon delete-chosen-file' name='delete_chosen_file_"
+            delete_html_after = "'>&times;</a>"
+
+        if(DEBUG) console.table(files_chosen)
+        for(let i = 0; i < files_chosen.length; i++){
+          let numbering = i + 1
+          files_chosen_html += "<p class='changeable'>" + numbering + " " + delete_html_before + i + delete_html_after + files_chosen[i].path + " (" + type(files_chosen[i]) + ")" + "</p>"
+          if(DEBUG) console.log(type(files_chosen[i]))
+        }
+        $(display_files_chosen_selector).html(files_chosen_html.replace(/%i18n:(.+?)%/g,replace_i18n))
+        
+        $(".delete-chosen-file").off('click')
+        $(".delete-chosen-file").on("click",function(){
+          if(DEBUG) console.log("delete!")
+          let index = 0
+          index = $(".delete-chosen-file").index(this)
+          if(DEBUG) console.log(index)
+          if( files_chosen.length > 1 ) files_chosen.splice( Number(index) , 1 )
+          else files_chosen = []
+          changed_files_chosen()
+        })
+        i18n_chg()
+
+      }
+
+
+      $(document).on('drop',function(e){
+        e.preventDefault();
+        if(DEBUG) console.table(e.originalEvent.dataTransfer.files)
+        Array.prototype.push.apply(files_chosen,e.originalEvent.dataTransfer.files)
+        files_chosen = files_chosen.filter(function(element, index, array){
+          if(DEBUG) console.log(element)
+          if(DEBUG) console.log(index)
+          if(DEBUG) console.log(array)
+          var can_add = true
+          for(let i = 0; i < array.length; i++){
+            if( i != index && array[i].path == element.path ) can_add = false
+            else if(i == index) can_add = true
+          }
+          if(DEBUG) console.log(can_add)
+          return can_add
+        })
+        changed_files_chosen()
+      })
+
+      $("button[name='do']").on('click',function(e){ e.preventDefault(); files_chosen = []; $(display_files_chosen_selector).html("") })
+      
+    })
+    </script>
+    <link rel="stylesheet" href="./assets/mdl/material.min.css">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./assets/fa/css/font-awesome.min.css">
+    <script src="./assets/mdl/material.min.js"></script>
+  </head>
+
+
+
+
+
+
+  <body>
+    <div class="container">
+      <h1><i class="fa fa-code" aria-hidden="true"></i>%i18n:i18ntest.Hello_World%</h1>
+      <p>
+        %i18n:i18ntest.We_are_using_node_version%<br>
+        %i18n:i18ntest.Chrome_version%<br>
+        %i18n:i18ntest.and_Electron_version%
+      </p>
+      <p>%i18n:i18ntest.OSis_platform%
+        %i18n:i18ntest.OS_arch_is_arch%</p>
+      <p>
+        %i18n:i18ntest.text_please_drop%
+      </p>
+      <div id="files_chosen"></div>
+      <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" name="do">
+        %i18n:i18ntest.Run_waifu2x%
+      </button>
+    </div>
+
+
+
+
+
+    <script>
+      function replace_i18n(match,_1){
+        if(DEBUG) console.log(match)
+        if(DEBUG) console.log(_1)
+        if(_1 == "(.+?)") return _1
+        let a = ""
+        eval('a = i18n.here.' + _1)
+        if(a == undefined) eval('a = i18n.ja.' + _1)
+        if(a == undefined) a = "文章がありません @" + _1
+        return eval("`" + a + "`")
+      }
+
+      document.body.innerHTML = document.body.innerHTML.replace(/%i18n:(.+?)%/g,replace_i18n)
+  </script>
+  </body>
+</html>
