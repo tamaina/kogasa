@@ -189,7 +189,18 @@
       })
 
       // 実行ボタン監視
-      $("button[name='do']").on('click',function(e){ e.preventDefault(); for(let i = 0; i < files_chosen.length; i++ ){ w2x_run(files_chosen[i]) } files_chosen = []; changed_files_list() })
+      $("button[name='do']").on('click',function(e){
+        e.preventDefault()
+        for(let i = 0; i < files_chosen.length; i++ ){
+          if($(`#input_fileformats_${type(files_chosen[i],'isInputable')}`).prop('checked') == true){
+            w2x_run(files_chosen[i])
+          } else if(type(files_chosen[i],'text') == 'directory') {
+            w2x_directory(files_chosen[i])
+          }
+        }
+        files_chosen = []
+        changed_files_list()
+      })
       $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; changed_files_list() })
       
       // fileformatsの設定html出力
