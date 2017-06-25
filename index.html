@@ -48,19 +48,19 @@
       })
       
       // 関数type()……File APIを読み取りファイルタイプを出力
-      //               returntypeはtextかisInputable
+      //               returntypeはtextかisReadable
       function type(file,returntype){ 
         let answer = false
         if(fs.existsSync(file.path) && fs.statSync(file.path).isDirectory()){
           switch(returntype){
             case 'text': answer = "directory"; break;
-            case 'isInputable' : answer = false; break;
+            case 'isReadable' : answer = false; break;
           }
         } else {
           if(DEBUG) console.log(file.type)
           switch(returntype){
             case 'text': answer = file.type; break;
-            case 'isInputable' : 
+            case 'isReadable' : 
               for( var key in setting.file_formats ){
                 if(DEBUG) console.log(key + ",mime:" + setting.file_formats[key].mime)
                 if(setting.file_formats[key].mime == file.type ){
@@ -90,18 +90,18 @@
               typeImage = new Image
               _this = files_chosen[i]
               mimetype = type(_this,'text')
-              isInputable = type(_this,'isInputable')
+              isReadable = type(_this,'isReadable')
               imageWidth = 0
               imageHeight = 0
-          if(isInputable){
+          if(isReadable){
             typeImage.src = new FileReader().readAsDataURL(_this)
           }
           files_chosen_html += "<p class='changeable pb-0'>" + numbering + " " + delete_html_before + i + delete_html_after + _this.path + " (" + mimetype
           if(DEBUG) console.table()
-          if(isInputable){
+          if(isReadable){
             imageWidth = typeImage.width
             imageHeight = typeImage.height
-            files_chosen_html += "," + isInputable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
+            files_chosen_html += "," + isReadable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
           } else {
             files_chosen_html +=")" + "</p>"
           }
@@ -116,18 +116,18 @@
           let typeImage = new Image
               _this = files_running[key].file
               mimetype = type(_this,'text')
-              isInputable = type(_this,'isInputable')
+              isReadable = type(_this,'isReadable')
               imageWidth = 0
               imageHeight = 0
-          if(isInputable){
+          if(isReadable){
             typeImage.src = new FileReader().readAsDataURL(_this)
           }
           files_running_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype
           if(DEBUG) console.table()
-          if(isInputable){
+          if(isReadable){
             imageWidth = typeImage.width
             imageHeight = typeImage.height
-            files_running_html += "," + isInputable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
+            files_running_html += "," + isReadable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
           } else {
             files_running_html +=")" + "</p>"
           }
@@ -156,10 +156,11 @@
       // waifu2x実行
       function w2x_run(file){
         let timestamp = new Date()
-        if(DEBUG) console.log("started at" + timestamp.toISOString())
+        if(DEBUG) console.log("started at " + timestamp.toISOString())
         let id = get_hash(timestamp.toISOString())
         files_running[id] = {}
         files_running[id]["file"] = file
+        files_running[id]["file"]["file_format"] = type(file,'isReadable')
         files_running[id]["order"] = setting
         changed_files_list()
       }
@@ -192,7 +193,7 @@
       $("button[name='do']").on('click',function(e){
         e.preventDefault()
         for(let i = 0; i < files_chosen.length; i++ ){
-          if($(`#input_fileformats_${type(files_chosen[i],'isInputable')}`).prop('checked') == true){
+          if($(`#input_fileformats_${type(files_chosen[i],'isReadable')}`).prop('checked') == true){
             w2x_run(files_chosen[i])
           } else if(type(files_chosen[i],'text') == 'directory') {
             w2x_directory(files_chosen[i])
