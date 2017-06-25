@@ -77,7 +77,7 @@
       }
 
       // 関数changed_files_list()……ファイルを入力/削除した時に実行し、ファイル一覧の変更をする
-      function changed_files_list(){
+      function changed_files_list(_image){
         let files_chosen_html = ""
             files_running_html = ""
             delete_html_before = "<a href='javascript:void(0)' class='mdl-button mdl-js-button mdl-button--icon delete-chosen-file' name='delete_chosen_file_"
@@ -113,24 +113,15 @@
         // 処理中ファイル一覧の出力
         if(files_running){
         for(let key in files_running){
-          let typeImage = new Image
-              _this = files_running[key].file
+          let _this = files_running[key].file
               mimetype = type(_this,'text')
               isReadable = type(_this,'isReadable')
               imageWidth = 0
               imageHeight = 0
-          if(isReadable){
-            typeImage.src = new FileReader().readAsDataURL(_this)
-          }
-          files_running_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype
           if(DEBUG) console.table()
-          if(isReadable){
-            imageWidth = typeImage.width
-            imageHeight = typeImage.height
-            files_running_html += "," + isReadable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
-          } else {
-            files_running_html +=")" + "</p>"
-          }
+          imageWidth = _image.width
+          imageHeight = _image.height
+          files_running_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
         }
         $(display_files_running_selector).html(files_running_html.replace(/%i18n:(.+?)%/g,replace_i18n))
         }
@@ -154,7 +145,7 @@
       }
 
       // waifu2x実行
-      function w2x_run(file){
+      function w2x_run(file,_image){
         let timestamp = new Date()
         if(DEBUG) console.log("started at " + timestamp.toISOString())
         let id = get_hash(timestamp.toISOString())
@@ -162,8 +153,25 @@
         files_running[id]["file"] = file
         files_running[id]["file"]["file_format"] = type(file,'isReadable')
         files_running[id]["order"] = setting
-        changed_files_list()
+        changed_files_list(_image)
       }
+
+      // 実行ボタン監視
+      $("button[name='do']").on('click',function(e){
+        e.preventDefault()
+        for(let i = 0; i < files_chosen.length; i++ ){
+          if($(`#input_fileformats_${type(files_chosen[i],'isReadable')}`).prop('checked') == true){
+            let thisImage = new Image
+            thisImage.src = files_chosen[i].path
+            thisImage.onLoad = w2x_run(files_chosen[i],thisImage)
+          } else if(type(files_chosen[i],'text') == 'directory') {
+            w2x_directory(files_chosen[i])
+          }
+        }
+        files_chosen = []
+        changed_files_list()
+      })
+      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; changed_files_list() })
 
       // DD時の動作
       $(document).on('drop',function(e){
@@ -188,21 +196,6 @@
         })
         changed_files_list()
       })
-
-      // 実行ボタン監視
-      $("button[name='do']").on('click',function(e){
-        e.preventDefault()
-        for(let i = 0; i < files_chosen.length; i++ ){
-          if($(`#input_fileformats_${type(files_chosen[i],'isReadable')}`).prop('checked') == true){
-            w2x_run(files_chosen[i])
-          } else if(type(files_chosen[i],'text') == 'directory') {
-            w2x_directory(files_chosen[i])
-          }
-        }
-        files_chosen = []
-        changed_files_list()
-      })
-      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; changed_files_list() })
       
       // fileformatsの設定html出力
       function fileformats_html(){
