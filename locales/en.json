@@ -8,6 +8,21 @@
     "OSis_platform" : "${process.platform}",
     "OS_arch_is_arch" : "Arch ${process.arch}",
     "Run_waifu2x" : "Run waifu2x",
-    "file" : "ファイル"
+    "file" : "file"
+  },
+  "text": {
+    "text_please_drop" : "Drop file or folder.",
+    "Run_waifu2x" : "Run waifu2x",
+    "file" : "file",
+    "DEL": "DELETE ALL",
+    "setting": {
+      "ext": {
+        "title": "Input File Format",
+        "allchoose": "Check All",
+        "imgchoose": "Images",
+        "movchoose": "Movies"
+      }
+    }
+
   }
 }

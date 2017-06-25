@@ -9,5 +9,20 @@
     "OS_arch_is_arch" : "アーキテクチャ ${process.arch}",
     "Run_waifu2x" : "実行",
     "file" : "ファイル"
+  },
+  "text": {
+    "text_please_drop" : "ファイルやフォルダーをドロップしてください。",
+    "Run_waifu2x" : "実行",
+    "file" : "ファイル",
+    "DEL": "すべて削除",
+    "setting": {
+      "ext": {
+        "title": "入力するファイルの種類",
+        "allchoose": "すべて選択",
+        "imgchoose": "画像を選択",
+        "movchoose": "動画を選択"
+      }
+    }
+    
   }
 }

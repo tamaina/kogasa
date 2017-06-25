@@ -10,6 +10,7 @@ const url = require('url')
 
 const DEBUG = true
 const fs = require('fs')
+const crypto = require('crypto')
 
 let mainWindow;
 

@@ -1,3 +1,7 @@
 .container{
     padding: 1em 5vw
 }
+
+.pb-0{
+    padding-bottom: 0
+}

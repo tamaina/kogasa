@@ -1,0 +1,140 @@
+{
+    "waifu2x": {
+        "binarys": {
+            "waifu2x-converter-cpp": {
+                "more_option": ""
+            },
+            "waifu2x-caffe-cui": {
+                "more_option": ""
+            }
+        },
+        "use": "waifu2x-converter-cpp"
+    },
+    "mode": "auto_scale",
+    "model": {
+        "choice": {
+            "vgg_7": [
+                "art",
+                "art_y",
+                "photo",
+                "ukbench"
+            ],
+            "upconv_7": [
+                "art",
+                "photo"
+            ]
+        },
+        "vendor": "vgg_7",
+        "type": "art"
+    },
+    "scale_ratio": {
+        "auto": false,
+        "scale_ratio": 2,
+        "max_width": 1920,
+        "max_height": 1080,
+        "min_width": 1920,
+        "min_height": 1080
+    },
+    "scale_down_before_w2x": {
+        "enable": "true",
+        "percent_ratio": 30
+    },
+    "noise_level": 1,
+    "file_formats": {
+        "png": {
+            "enable": true,
+            "mime": "image/png",
+            "animateable": false,
+            "chrome_supported": true,
+            "w2x_supported": true,
+            "extentions": [
+                "png"
+            ]
+        },
+        "jpeg": {
+            "enable": true,
+            "mime": "image/jpeg",
+            "animateable": false,
+            "chrome_supported": true,
+            "w2x_supported": true,
+            "extentions": [
+                "jpeg",
+                "jpg"
+            ]
+        },
+        "tiff": {
+            "enable": true,
+            "mime": "image/tiff",
+            "animateable": false,
+            "chrome_supported": true,
+            "w2x_supported": true,
+            "extentions": [
+                "tif",
+                "tiff"
+            ]
+        },
+        "bmp": {
+            "enable": true,
+            "mime": "image/bmp",
+            "animateable": false,
+            "chrome_supported": true,
+            "w2x_supported": true,
+            "extentions": [
+                "bmp"
+            ]
+        },
+        "gif": {
+            "enable": true,
+            "mime": "image/gif",
+            "animateable": true,
+            "chrome_supported": true,
+            "w2x_supported": true,
+            "extentions": [
+                "gif"
+            ]
+        },
+        "targa": {
+            "enable": true,
+            "mime": "image/x-targa",
+            "animateable": true,
+            "chrome_supported": true,
+            "w2x_supported": true,
+            "extentions": [
+                "gif"
+            ]
+        },
+        "bpg": {
+            "enable": true,
+            "mime": "image/x-bpg",
+            "animateable": true,
+            "chrome_supported": false,
+            "w2x_supported": false,
+            "extentions": [
+                "gif"
+            ]
+        },
+        "mp4": {
+            "enable": true,
+            "mime": "video/mp4",
+            "animateable": true,
+            "chrome_supported": true,
+            "w2x_supported": false,
+            "extentions": [
+                "gif"
+            ]
+        }
+    },
+    "output": {
+        "path": "",
+        "file_format_image": "png",
+        "file_format_movie": "png"
+    },
+    "log": [
+        [
+            "2017-06-25T18:27:37.208Z"
+        ],
+        [
+            "2017-06-25T18:37:35.260Z"
+        ]
+    ]
+}
