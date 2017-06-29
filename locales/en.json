@@ -17,6 +17,7 @@
     "Run_waifu2x" : "Run waifu2x",
     "file" : "file",
     "DEL": "DELETE ALL",
+    "PAUSE": "PAUSE",
     "setting": {
       "ext": {
         "title": "Input File Format",
@@ -31,6 +32,9 @@
         "title": "Select model",
         "vendor": "",
         "image": ""
+      },
+      "noise": {
+        "title": "Denoise level"
       }
     },
     "files": {

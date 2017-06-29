@@ -17,6 +17,7 @@
     "Run_waifu2x" : "実行",
     "file" : "ファイル",
     "DEL": "すべて削除",
+    "PAUSE": "ポーズ",
     "setting": {
       "ext": {
         "title": "入力するファイルの種類",
@@ -31,6 +32,9 @@
         "title": "使用するモデル",
         "vendor": "処理",
         "image": "画像の種類"
+      },
+      "noise": {
+        "title": "デノイズレベル"
       }
     },
     "files": {

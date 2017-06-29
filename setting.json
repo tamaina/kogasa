@@ -66,10 +66,10 @@
                         }
                     }
                 ],
-                "image_val": "photo"
+                "image_val": "art"
             }
         ],
-        "vendor": "upconv_7"
+        "vendor": "vgg_7"
     },
     "scale_ratio": {
         "auto": false,
@@ -83,7 +83,7 @@
         "enable": "true",
         "percent_ratio": 30
     },
-    "noise_level": 1,
+    "noise_level": "2",
     "file_formats": {
         "png": {
             "enable": true,
@@ -200,6 +200,9 @@
         ],
         [
             "2017-06-28T15:59:05.995Z"
+        ],
+        [
+            "2017-06-29T16:15:33.593Z"
         ]
     ]
 }

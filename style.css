@@ -25,3 +25,10 @@
 .mdl-radio{
     width: 100%
 }
+
+.slider_disp{
+    font-size: 16px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,.12);
+    transition: border-bottom 0.1s linear 0.1s;
+}

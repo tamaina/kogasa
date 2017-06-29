@@ -3,6 +3,12 @@
   <head>
     <meta charset="UTF-8">
     <title>kogasa - waifu2x frontend</title>
+    <link rel="stylesheet" href="./assets/mdl/material.min.css">
+    <link rel="stylesheet" href="./assets/mdl/mdl-selectfield.min.css">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./assets/fa/css/font-awesome.min.css">
+    <script src="./assets/mdl/material.min.js"></script>
+    <script src="./assets/mdl/mdl-selectfield.min.js"></script>
     <script>
     let _module_exports = module.exports
         _noderequire = window.require
@@ -462,7 +468,7 @@
       // 初期設定処理
       $("input[name='w2xbins']").prop("checked",false)
       $("input[name='w2xbins'][value='"+ setting.waifu2x.use +"']").prop("checked",true).trigger('change')
-      $("textarea#w2x_option").val(setting.waifu2x.binarys[setting.waifu2x.use].more_option)
+      $("textarea#w2x_option").val(setting.waifu2x.binarys[setting.waifu2x.use].more_option).trigger('change')
 
       // 変更検知
       $("input[name='w2xbins']").on('change',function(){
@@ -565,6 +571,23 @@
       model_image_change($(`option[value="${setting.model.vendor}"]`).attr("data-number"))
 
 
+      /////////////////////////////////////////////////////////////////
+      // noise_level                                                 //
+      // デノイズレベル                                              //
+      /////////////////////////////////////////////////////////////////
+      // 初期設定
+      $("#noise_level").on("input change",function(){
+        if(DEBUG) console.log($(this).val())
+        setting.noise_level = $(this).val()
+        $("#noise_level_disp").html($(this).val())
+        save()
+      }).on("focus",function(){
+        $("#noise_level_disp").attr("style","border-bottom:2px solid rgb(0,150,136)")
+      }).on("mouseleave",function(){
+        $("#noise_level_disp").attr("style","1px solid rgba(0,0,0,.12)")
+      })
+      $("#noise_level").get(0).MaterialSlider.change(setting.noise_level)
+      $("#noise_level").trigger("change")
 
       changed_files_list()
     })
@@ -573,10 +596,6 @@
       componentHandler.upgradeDom('input,textarea,select');
     })
     </script>
-    <link rel="stylesheet" href="./assets/mdl/material.min.css">
-    <link rel="stylesheet" href="./assets/mdl/mdl-selectfield.min.css">
-    <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="./assets/fa/css/font-awesome.min.css">
   </head>
 
 
@@ -632,6 +651,20 @@
             </div>
           </div>
 
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="ext">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">%i18n:text.setting.noise.title%</h2>
+            </div>
+            <div class="mdl-card__supporting-text" id="noise_level_wrap" style="display:flex">
+              <div style="flex: 1 250px">
+                <input class="mdl-slider mdl-js-slider p-0" type="range" id="noise_level" min="0" max="3" step="1">
+              </div>
+              <div style="width: 40px">
+                <p class="slider_disp" id="noise_level_disp"></p>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <h3>入力設定</h3>
@@ -659,6 +692,9 @@
         <div style="display:flex">
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" name="do" style="margin-left: auto;">
           %i18n:text.Run_waifu2x%
+        </button>
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" name="PAUSE" style="margin-left: 0.25em">
+          %i18n:text.PAUSE%
         </button>
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" name="DEL" style="margin-left: 0.25em">
           %i18n:text.DEL%
@@ -703,7 +739,5 @@
 
       document.body.innerHTML = document.body.innerHTML.replace(/%i18n:(.+?)%/g,replace_i18n)
   </script>
-  <script src="./assets/mdl/material.min.js"></script>
-  <script src="./assets/mdl/mdl-selectfield.min.js"></script>
   </body>
 </html>
