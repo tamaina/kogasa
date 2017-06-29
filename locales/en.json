@@ -11,6 +11,8 @@
     "file" : "file"
   },
   "text": {
+    "title": "KOGASA",
+    "descriptions": "1.Toggle setting 2. Drop image, movie, or folder in this window 3.Push start button",
     "text_please_drop" : "Drop file or folder.",
     "Run_waifu2x" : "Run waifu2x",
     "file" : "file",
@@ -21,8 +23,24 @@
         "allchoose": "Check All",
         "imgchoose": "Images",
         "movchoose": "Movies"
+      },
+      "w2xbins": {
+        "title": "waifu2x binary"
+      },
+      "model": {
+        "title": "Select model",
+        "vendor": "",
+        "image": ""
       }
+    },
+    "files": {
+      "chosen": "Chosen:",
+      "running": "Running:",
+      "done": "Done:",
+      "nofile": "Files and folders may display here"
+    },
+    "error": {
+      "selectavalue": "Select a value"
     }
-
   }
 }

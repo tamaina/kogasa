@@ -5,3 +5,23 @@
 .pb-0{
     padding-bottom: 0
 }
+
+.pb-1{
+    padding-bottom: 0.195em
+}
+
+.p-0{
+    padding: 0
+}
+
+.m-3{
+    margin: 0.5em
+}
+
+.flex_1{
+    flex: 1 330px
+}
+
+.mdl-radio{
+    width: 100%
+}

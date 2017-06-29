@@ -5,27 +5,71 @@
                 "more_option": ""
             },
             "waifu2x-caffe-cui": {
-                "more_option": ""
+                "more_option": "-p cpu"
             }
         },
-        "use": "waifu2x-converter-cpp"
+        "use": "waifu2x-caffe-cui"
     },
     "mode": "auto_scale",
     "model": {
-        "choice": {
-            "vgg_7": [
-                "art",
-                "art_y",
-                "photo",
-                "ukbench"
-            ],
-            "upconv_7": [
-                "art",
-                "photo"
-            ]
-        },
-        "vendor": "vgg_7",
-        "type": "art"
+        "vendors": [
+            {
+                "name": "vgg_7",
+                "description": {
+                    "ja": "標準的な処理方法です。",
+                    "en": "Default"
+                },
+                "images": [
+                    {
+                        "name": "art",
+                        "description": {
+                            "ja": "アニメや漫画の絵を変換するのに適しています。",
+                            "en": "For paint as anime and manga."
+                        }
+                    },
+                    {
+                        "name": "art_y",
+                        "description": {
+                            "ja": "アニメや漫画の絵を変換するのに適しています。画像の輝度Y成分のみ変換します。",
+                            "en": "For paint as anime and manga. It converts only \"Y\" data."
+                        }
+                    },
+                    {
+                        "name": "photo",
+                        "description": {
+                            "ja": "写真を変換するのに適しています。",
+                            "en": "For photograph."
+                        }
+                    }
+                ],
+                "image_val": "art"
+            },
+            {
+                "name": "upconv_7",
+                "description": {
+                    "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用量が増えます。",
+                    "en": "Great but heavy"
+                },
+                "images": [
+                    {
+                        "name": "art",
+                        "description": {
+                            "ja": "アニメや漫画の絵を変換するのに適しています。",
+                            "en": "For paint as anime and manga."
+                        }
+                    },
+                    {
+                        "name": "photo",
+                        "description": {
+                            "ja": "写真を変換するのに適しています。",
+                            "en": "For photograph."
+                        }
+                    }
+                ],
+                "image_val": "photo"
+            }
+        ],
+        "vendor": "upconv_7"
     },
     "scale_ratio": {
         "auto": false,
@@ -52,7 +96,7 @@
             ]
         },
         "jpeg": {
-            "enable": true,
+            "enable": false,
             "mime": "image/jpeg",
             "animateable": false,
             "chrome_supported": true,
@@ -63,7 +107,7 @@
             ]
         },
         "tiff": {
-            "enable": true,
+            "enable": false,
             "mime": "image/tiff",
             "animateable": false,
             "chrome_supported": true,
@@ -74,7 +118,7 @@
             ]
         },
         "bmp": {
-            "enable": true,
+            "enable": false,
             "mime": "image/bmp",
             "animateable": false,
             "chrome_supported": true,
@@ -84,7 +128,7 @@
             ]
         },
         "gif": {
-            "enable": true,
+            "enable": false,
             "mime": "image/gif",
             "animateable": true,
             "chrome_supported": true,
@@ -144,6 +188,18 @@
         ],
         [
             "2017-06-25T19:06:12.370Z"
+        ],
+        [
+            "2017-06-26T09:59:14.068Z"
+        ],
+        [
+            "2017-06-28T14:55:04.133Z"
+        ],
+        [
+            "2017-06-28T14:55:29.229Z"
+        ],
+        [
+            "2017-06-28T15:59:05.995Z"
         ]
     ]
 }

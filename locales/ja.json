@@ -11,6 +11,8 @@
     "file" : "ファイル"
   },
   "text": {
+    "title": "Kogasa",
+    "descriptions": "waifu2xをフロントエンドで実行します。設定を変更し、下部の[実行]ボタンを押すと画像の生成が開始されます。",
     "text_please_drop" : "ファイルやフォルダーをドロップしてください。",
     "Run_waifu2x" : "実行",
     "file" : "ファイル",
@@ -21,8 +23,24 @@
         "allchoose": "すべて選択",
         "imgchoose": "画像を選択",
         "movchoose": "動画を選択"
+      },
+      "w2xbins": {
+        "title": "使用するwaifu2x"
+      },
+      "model": {
+        "title": "使用するモデル",
+        "vendor": "処理",
+        "image": "画像の種類"
       }
+    },
+    "files": {
+      "chosen": "選択済み",
+      "running": "処理中",
+      "done": "完成",
+      "nofile": "ここにファイルやフォルダーの一覧が表示されます"
+    },
+    "error": {
+      "selectavalue": "選択してください"
     }
-    
   }
 }

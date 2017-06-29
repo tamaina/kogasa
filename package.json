@@ -22,6 +22,7 @@
   "homepage": "https://github.com/tamaina/kogasa#readme",
   "devDependencies": {
     "electron": "^1.6.10",
-    "electron-packager": "^8.7.0"
+    "electron-packager": "^8.7.0",
+    "extend": "^3.0.1"
   }
 }

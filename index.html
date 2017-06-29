@@ -14,7 +14,8 @@
     delete _require
     delete _module_exports
     const fs = require('fs')
-          nodecrypto = require('crypto')
+          ncrypto = require('crypto')
+          nextend = require('extend')
     const DEBUG = true
           setting_path = "./setting.json"
           i18n = {}
@@ -26,11 +27,192 @@
       let files_chosen = []
           files_running = {}
           files_finished = {}
-          setting = require(setting_path)
-    
-
-    // 変数設定
-
+      // settingの素(settingが無い場合の初期値決定、およびサジェスト用)
+      let setting = {
+        "waifu2x": {
+            "binarys": {
+                "waifu2x-converter-cpp": {
+                    "more_option": ""
+                },
+                "waifu2x-caffe-cui": {
+                    "more_option": "-tta 1\n-p cpu"
+                }
+            },
+            "use": "waifu2x-caffe-cui"
+        },
+        "mode": "auto_scale",
+        "model": {
+            "vendors": [
+                {
+                    "name": "vgg_7",
+                    "description": {
+                        "ja": "標準的な処理方法です。",
+                        "en": "Default"
+                    },
+                    "images": [
+                        {
+                            "name": "art",
+                            "description": {
+                                "ja": "アニメや漫画の絵を変換するのに適しています。",
+                                "en": "For paint as anime and manga."
+                            }
+                        },
+                        {
+                            "name": "art_y",
+                            "description": {
+                                "ja": "アニメや漫画の絵を変換するのに適しています。画像の輝度Y成分のみ変換します。",
+                                "en": "For paint as anime and manga. It converts only \"Y\" data."
+                            }
+                        },
+                        {
+                            "name": "photo",
+                            "description": {
+                                "ja": "写真を変換するのに適しています。",
+                                "en": "For photograph."
+                            }
+                        }
+                    ],
+                    "image_val": "art"
+                },
+                {
+                    "name": "upconv_7",
+                    "description": {
+                        "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用料が増えます。",
+                        "en": "Great but heavy"
+                    },
+                    "images": [
+                        {
+                            "name": "art",
+                            "description": {
+                                "ja": "アニメや漫画の絵を変換するのに適しています。",
+                                "en": "For paint as anime and manga."
+                            }
+                        },
+                        {
+                            "name": "photo",
+                            "description": {
+                                "ja": "写真を変換するのに適しています。",
+                                "en": "For photograph."
+                            }
+                        }
+                    ],
+                    "image_val": "art"
+                }
+            ],
+            "vendor": "vgg_7"
+        },
+        "scale_ratio": {
+            "auto": false,
+            "scale_ratio": 2,
+            "max_width": 1920,
+            "max_height": 1080,
+            "min_width": 1920,
+            "min_height": 1080
+        },
+        "scale_down_before_w2x": {
+            "enable": "true",
+            "percent_ratio": 30
+        },
+        "noise_level": 1,
+        "file_formats": {
+            "png": {
+                "enable": true,
+                "mime": "image/png",
+                "animateable": false,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "png"
+                ]
+            },
+            "jpeg": {
+                "enable": true,
+                "mime": "image/jpeg",
+                "animateable": false,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "jpeg",
+                    "jpg"
+                ]
+            },
+            "tiff": {
+                "enable": true,
+                "mime": "image/tiff",
+                "animateable": false,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "tif",
+                    "tiff"
+                ]
+            },
+            "bmp": {
+                "enable": true,
+                "mime": "image/bmp",
+                "animateable": false,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "bmp"
+                ]
+            },
+            "gif": {
+                "enable": true,
+                "mime": "image/gif",
+                "animateable": true,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "gif"
+                ]
+            },
+            "targa": {
+                "enable": true,
+                "mime": "image/x-targa",
+                "animateable": true,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "gif"
+                ]
+            },
+            "bpg": {
+                "enable": true,
+                "mime": "image/x-bpg",
+                "animateable": true,
+                "chrome_supported": false,
+                "w2x_supported": false,
+                "extentions": [
+                    "gif"
+                ]
+            },
+            "mp4": {
+                "enable": true,
+                "mime": "video/mp4",
+                "animateable": true,
+                "chrome_supported": true,
+                "w2x_supported": false,
+                "extentions": [
+                    "gif"
+                ]
+            }
+        },
+        "output": {
+            "path": "",
+            "file_format_image": "png",
+            "file_format_movie": "png"
+        },
+        "log": [
+        ]
+    }
+    if(DEBUG) console.log(setting)
+      let savedata = require(setting_path)
+    if(DEBUG) console.log(savedata)
+      setting = nextend(setting,savedata)
+      
+    if(DEBUG) console.log(setting)
+  
     if(DEBUG) console.log(i18n)
 
     $(document).on('dragover drop',function(e) {
@@ -40,13 +222,31 @@
 
     $(function(){
 
+      /* *************************************************************** */
+      /*                                                                 */
+      /* 設定入出力                                                      */
+      /*                                                                 */
+      /* *************************************************************** */
+
       // 終了時setting.jsonを書き換える。
       $(window).on("load",function(){
         let timestamp = new Date()
         setting.log.push([timestamp.toISOString()])
-        fs.writeFile(setting_path, JSON.stringify(setting,null,4))
+        save()
       })
-      
+
+      function save(){
+        componentHandler.upgradeDom('input,textarea,select');
+        fs.writeFile(setting_path, JSON.stringify(setting,null,4))
+      }
+
+
+      /* *************************************************************** */
+      /*                                                                 */
+      /* 映像・画像入出力                                                */
+      /*                                                                 */
+      /* *************************************************************** */
+  
       // 関数type()……File APIを読み取りファイルタイプを出力
       //               returntypeはtextかisReadable
       function type(file,returntype){ 
@@ -106,6 +306,7 @@
             files_chosen_html +=")" + "</p>"
           }
         }
+        if(files_chosen_html.length < 2) files_chosen_html = "%i18n:text.files.nofile%"
         $(display_files_chosen_selector).html(files_chosen_html.replace(/%i18n:(.+?)%/g,replace_i18n))
         
         if(DEBUG) console.table(files_running)
@@ -123,6 +324,7 @@
           imageHeight = _image.height
           files_running_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
         }
+        if(files_running_html.length < 2) files_running_html = "%i18n:text.files.nofile%"
         $(display_files_running_selector).html(files_running_html.replace(/%i18n:(.+?)%/g,replace_i18n))
         }
         $(".delete-chosen-file").off('click')
@@ -136,24 +338,6 @@
           changed_files_list()
         })
 
-      }
-
-      //id発行
-      function get_hash(timestamp) {
-        if(DEBUG) console.log(crypto)
-        return nodecrypto.createHash('sha1').update(timestamp).digest("hex")
-      }
-
-      // waifu2x実行
-      function w2x_run(file,_image){
-        let timestamp = new Date()
-        if(DEBUG) console.log("started at " + timestamp.toISOString())
-        let id = get_hash(timestamp.toISOString())
-        files_running[id] = {}
-        files_running[id]["file"] = file
-        files_running[id]["file"]["file_format"] = type(file,'isReadable')
-        files_running[id]["order"] = setting
-        changed_files_list(_image)
       }
 
       // 実行ボタン監視
@@ -196,15 +380,53 @@
         })
         changed_files_list()
       })
+
+
       
-      // fileformatsの設定html出力
+      /* *************************************************************** */
+      /*                                                                 */
+      /* コマンドの実行                                                  */
+      /*                                                                 */
+      /* *************************************************************** */
+
+      //id発行
+      function get_hash(timestamp) {
+        if(DEBUG) console.log(crypto)
+        return ncrypto.createHash('sha1').update(timestamp).digest("hex")
+      }
+
+      // waifu2x実行
+      function w2x_run(file,_image){
+        let timestamp = new Date()
+        if(DEBUG) console.log("started at " + timestamp.toISOString())
+        let id = get_hash(timestamp.toISOString())
+        files_running[id] = {}
+        files_running[id]["file"] = file
+        files_running[id]["file"]["file_format"] = type(file,'isReadable')
+        files_running[id]["order"] = setting
+        changed_files_list(_image)
+      }
+
+
+
+      
+      /* *************************************************************** */
+      /*                                                                 */
+      /* 設定フォームの生成・検知                                        */
+      /*                                                                 */
+      /* *************************************************************** */
+
+      /////////////////////////////////////////////////////////////////
+      // fileformats                                                 //
+      // 入力ファイルフォーマット                                    //
+      /////////////////////////////////////////////////////////////////
       function fileformats_html(){
         let answer = ""
         for(let key in setting.file_formats){
           let _this = setting.file_formats[key]
           answer += `
           <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="input_fileformats_${key}">
-            <input type="checkbox" id="input_fileformats_${key}" class="mdl-checkbox__input" checked>
+            <input type="checkbox" id="input_fileformats_${key}" class="mdl-checkbox__input" value="${key}" checked>
             <span class="mdl-checkbox__label">${key}</span>
           </label>
           `
@@ -212,16 +434,149 @@
         return answer
       }
       $("#fileformats_inputs").html(fileformats_html())
+      // 変更検知
+      $("input[id^='input_fileformats_']").on('change',function(){
+        setting.file_formats[$(this).val()].enable = $(this).prop("checked")
+        save()
+      })
 
+      /////////////////////////////////////////////////////////////////
+      // w2xbins                                                     //
+      // 利用するバイナリ                                            //
+      /////////////////////////////////////////////////////////////////
+      function w2xbins_html(){
+        let answer=""
+        for(let key in setting.waifu2x.binarys){
+          let _this = setting.waifu2x.binarys[key]
+          answer+=`
+          <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="w2xbin_${key}">
+            <input type="radio" id="w2xbin_${key}" name="w2xbins" value="${key}" class="mdl-radio__button">
+            <span class="mdl-radio__label">${key}.exe</span>
+          </label>
+          `
+        }
+        return answer
+      }
+      $("#w2xbins").html(w2xbins_html())
+
+      // 初期設定処理
+      $("input[name='w2xbins']").prop("checked",false)
+      $("input[name='w2xbins'][value='"+ setting.waifu2x.use +"']").prop("checked",true).trigger('change')
+      $("textarea#w2x_option").val(setting.waifu2x.binarys[setting.waifu2x.use].more_option)
+
+      // 変更検知
+      $("input[name='w2xbins']").on('change',function(){
+        setting.waifu2x.use = $(this).val()
+        $("textarea#w2x_option").val(setting.waifu2x.binarys[$(this).val()].more_option)
+        save()
+      })
+      $("textarea#w2x_option").on('change',function(){
+        setting.waifu2x.binarys[$("input[name='w2xbins']:checked").val()].more_option = $(this).val()
+        save()
+      })
+      
+      /////////////////////////////////////////////////////////////////
+      // model                                                       //
+      // 利用するモデル                                              //
+      /////////////////////////////////////////////////////////////////
+      function model_vendor_html(){
+        let answer=`<option value=""></option>
+        `
+        let images_form=""
+        for(let i = 0; i < setting.model.vendors.length; i++){
+          let _this = setting.model.vendors[i]
+          answer+=`<option value="${_this.name}" data-number="${i}">${_this.name}</option>
+          `
+          images_form += model_image_html(i)
+        }
+        $("#model_image_wrap").html(images_form.replace(/%i18n:(.+?)%/g,replace_i18n))
+        return answer
+      }
+      function model_image_html(i){
+        let vendor_name = setting.model.vendors[i].name
+        let answer=""
+        answer+=`
+                <div class="mdl-selectfield mdl-js-selectfield model_image_selectfields_wrap mdl-textfield--floating-label p-0" id="model_image_${vendor_name}" data-vendor="${vendor_name}" data-vendor-number="${i}">
+                  <select id="selectform_model_image_${vendor_name}" class="mdl-selectfield__select model_image_selectfield" data-vendor="${vendor_name}" data-vendor-number="${i}">
+                    <option value=""></option>
+        `
+        for(let j = 0; j < setting.model.vendors[i].images.length; j++){
+          let _this = setting.model.vendors[i].images[j]
+          answer += `<option value="${_this.name}" data-number="${j}">${_this.name}</option>
+          `
+        }
+        answer+=`
+                  </select>
+                  <label class="mdl-selectfield__label" for="selectform_model_image_${vendor_name}"></label>
+                  <span class="mdl-selectfield__error">%i18n:text.error.selectavalue%</span>
+                </div>
+        `
+        return answer
+      }
+      $("#model_vendor").html(model_vendor_html)
+
+      // 初期設定処理
+      $("#model_vendor").prop("value",setting.model.vendor)
+      for(let i = 0; i < setting.model.vendors.length; i++){
+        if(setting.model.vendors[i].name == setting.model.vendor){
+          $("#model_vendor_description").html(function(){
+            let a = setting.model.vendors[i].description[window.navigator.language]
+            if(a == undefined) a = setting.model.vendors[o].description.ja
+            else if(a == undefined) a = ""
+            return a
+          })
+        break
+        }
+      }
+
+      function model_image_change(vendor_num){
+        $(".model_image_selectfields_wrap").hide()
+        $(".model_image_selectfields_wrap[data-vendor-number='"+ vendor_num +"']").show()
+        $(".model_image_selectfield[data-vendor-number='"+ vendor_num +"']").prop("value",setting.model.vendors[vendor_num].image_val).trigger('change')
+      }
+      // 変更検知
+      $("#model_vendor").on("change",function(){
+        if(DEBUG) console.log(this)
+        let vendor_num = $(`#model_vendor option[value="${$('#model_vendor').val()}"]`).attr("data-number")
+        setting.model.vendor =$(this).val()
+        $("#model_vendor_description").html(function(){
+          let a = setting.model.vendors[vendor_num].description[window.navigator.language]
+          if(a == undefined) a = setting.model.vendors[vendor_num].description.ja
+          else if(a == undefined) a = ""
+          return a
+        })
+        model_image_change(vendor_num)
+        save()
+      })
+      $(".model_image_selectfield").on("change",function(){
+        if(DEBUG) console.log(this)
+        let vendor_num = $(this).attr("data-vendor-number")
+            image_num = $(`.model_image_selectfield[data-vendor-number="${vendor_num}"] option[value="${$(this).val()}"]`).attr("data-number")
+        setting.model.vendors[vendor_num].image_val = $(this).val()
+        save()
+        $("#model_image_description").html(function(){
+          let a = setting.model.vendors[vendor_num].images[image_num].description[window.navigator.language]
+          if(a == undefined) a = setting.model.vendors[vendor_num].images[image_num].description.ja
+          else if(a == undefined) a = ""
+          return a
+        })
+      })
+
+      model_image_change($(`option[value="${setting.model.vendor}"]`).attr("data-number"))
+
+
+
+      changed_files_list()
     })
+    
     $(window).on('load',function(){
-      componentHandler.upgradeDom();
+      componentHandler.upgradeDom('input,textarea,select');
     })
     </script>
     <link rel="stylesheet" href="./assets/mdl/material.min.css">
+    <link rel="stylesheet" href="./assets/mdl/mdl-selectfield.min.css">
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./assets/fa/css/font-awesome.min.css">
-    <script src="./assets/mdl/material.min.js"></script>
   </head>
 
 
@@ -230,49 +585,111 @@
 
 
   <body>
-    <div class="container">
-      <h1><i class="fa fa-code" aria-hidden="true"></i>%i18n:i18ntest.Hello_World%</h1>
-      <p>
-        %i18n:i18ntest.We_are_using_node_version%<br>
-        %i18n:i18ntest.Chrome_version%<br>
-        %i18n:i18ntest.and_Electron_version%
-      </p>
-      <p>%i18n:i18ntest.OSis_platform%
-        %i18n:i18ntest.OS_arch_is_arch%
-      </p>
-      <form>
+    <form>
+      <div class="container">
+        <h1><i class="fa fa-code" aria-hidden="true"></i>%i18n:text.title%</h1>
+        <p>
+          %i18n:text.descriptions%
+        </p>
 
-      
-      <div class="mdl-card mdl-shadow--2dp" id="ext">
-        <div class="mdl-card__title">
-          <h2 class="mdl-card__title-text">%i18n:text.setting.ext.title%</h2>
+        <h3>処理設定</h3>
+        <div style="display: flex; width: 100%; flex-wrap: wrap">
+
+
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="ext">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">%i18n:text.setting.w2xbins.title%</h2>
+            </div>
+            <div class="mdl-card__supporting-text" id="w2xbins">
+            </div>
+            <div class="mdl-card__actions mdl-card--border">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <textarea class="mdl-textfield__input" type="text" rows="1" id="w2x_option" name"w2x_option"></textarea>
+                <label class="mdl-textfield__label" for="w2x_option">Option</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="ext">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">%i18n:text.setting.model.title%</h2>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <h5>処理</h5>
+              <div id="model_vendor_wrap">
+                <div class="mdl-selectfield mdl-js-selectfieldm dl-textfield--floating-label p-0">
+                  <select id="model_vendor" name="model_vendor" class="mdl-selectfield__select">
+                  </select>
+                  <label class="mdl-selectfield__label" for="model_vendor"></label>
+                  <span class="mdl-selectfield__error">%i18n:text.error.selectavalue%</span>
+                </div>
+              </div>
+              <p class="pb-1" id="model_vendor_description"></p>
+              <h5>画像の種類</h5>
+              <div id="model_image_wrap">
+              </div>
+              <p class="pb-1" id="model_image_description"></p>
+            </div>
+          </div>
+
         </div>
-        <div class="mdl-card__supporting-text" id="fileformats_inputs">
+
+        <h3>入力設定</h3>
+        <div style="display: flex; width: 100%; flex-wrap: wrap">
+
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="ext">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">%i18n:text.setting.ext.title%</h2>
+            </div>
+            <div class="mdl-card__supporting-text" id="fileformats_inputs">
+            </div>
+          </div>
+
         </div>
+        <h3>%i18n:text.files.chosen%</h3>
+        <div id="files_chosen"></div>
+
       </div>
 
-      <p>
-        %i18n:text.text_please_drop%
-      </p>
-      <div id="files_chosen"></div>
-      <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" name="do">
-        %i18n:text.Run_waifu2x%
-      </button>
-      <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" name="DEL">
-        %i18n:text.DEL%
-      </button>
+        <div class="mdl-shadow--2dp" style="position: sticky; bottom:0; right: 0; padding-top: 0.75em; padding-bottom: 0.75em; padding-right: 3em; padding-left: 3em; z-index: 1001; background-color:aliceblue">
+        
+        <p class="pb-0">
+          %i18n:text.text_please_drop%
+        </p>
+        <div style="display:flex">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" name="do" style="margin-left: auto;">
+          %i18n:text.Run_waifu2x%
+        </button>
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" name="DEL" style="margin-left: 0.25em">
+          %i18n:text.DEL%
+        </button>
+        </div>
+        </div>
 
-      <h3>処理中ファイル</h3>
-      <div id="files_running"></div>
+      <div class="container">
+        <h3>%i18n:text.files.running%</h3>
+        <div id="files_running" style="padding-bottom: 1em"></div>
+
+        <p class="pb-0">
+          %i18n:i18ntest.We_are_using_node_version%<br>
+          %i18n:i18ntest.Chrome_version%<br>
+          %i18n:i18ntest.and_Electron_version%
+        </p>
+      </div>
+
+
+
+
 
       </form>
-    </div>
-
-
-
-
-
     <script>
+
+      /* *************************************************************** */
+      /*                                                                 */
+      /* i18n                                                            */
+      /*                                                                 */
+      /* *************************************************************** */
+
       function replace_i18n(match,_1){
         if(DEBUG) console.log(match)
         if(DEBUG) console.log(_1)
@@ -286,5 +703,7 @@
 
       document.body.innerHTML = document.body.innerHTML.replace(/%i18n:(.+?)%/g,replace_i18n)
   </script>
+  <script src="./assets/mdl/material.min.js"></script>
+  <script src="./assets/mdl/mdl-selectfield.min.js"></script>
   </body>
 </html>
