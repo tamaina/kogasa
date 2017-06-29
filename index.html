@@ -589,6 +589,45 @@
       $("#noise_level").get(0).MaterialSlider.change(setting.noise_level)
       $("#noise_level").trigger("change")
 
+      /////////////////////////////////////////////////////////////////
+      // noise_level                                                 //
+      // デノイズレベル                                              //
+      /////////////////////////////////////////////////////////////////
+      // 初期設定
+      $("#scale_auto").prop("checked",setting.scale_ratio.auto).trigger("change")
+      $("#scale_ratio").prop("value",setting.scale_ratio.scale_ratio).trigger("change")
+      $("#scale_auto_h").prop("value",setting.scale_ratio.min_height).trigger("change")
+      $("#scale_auto_w").prop("value",setting.scale_ratio.min_width).trigger("change")
+
+      // 変更検知
+      $("#scale_auto").on("change",function(){
+        if($(this).prop("checked")){
+          setting.scale_ratio.auto = true
+          $("#scale_ratio_wrap").hide()
+          $("#scale_auto_wrap").show()
+        }
+        if(!$(this).prop("checked")){
+          setting.scale_ratio.auto = false
+          $("#scale_ratio_wrap").show()
+          $("#scale_auto_wrap").hide()
+        }
+      })
+      function scale_auto_load(){
+        if($("#scale_auto").prop("checked")){
+          setting.scale_ratio.auto = true
+          $("#scale_ratio_wrap").hide()
+          $("#scale_auto_wrap").show()
+        }
+        if(!$("#scale_auto").prop("checked")){
+          setting.scale_ratio.auto = false
+          $("#scale_ratio_wrap").show()
+          $("#scale_auto_wrap").hide()
+        }
+      }
+      scale_auto_load()
+      $("#scale_ratio").on("change",function(){setting.scale_ratio.scale_ratio = $(this).val()})
+      $("#scale_auto_h").on("change",function(){setting.scale_ratio.min_height = $(this).val()})
+      $("#scale_auto_w").on("change",function(){setting.scale_ratio.min_width = $(this).val()})
       changed_files_list()
     })
     
@@ -611,11 +650,11 @@
           %i18n:text.descriptions%
         </p>
 
-        <h3>処理設定</h3>
+        <h3>%i18n:text.processorder%</h3>
         <div style="display: flex; width: 100%; flex-wrap: wrap">
 
 
-          <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="ext">
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1">
             <div class="mdl-card__title">
               <h2 class="mdl-card__title-text">%i18n:text.setting.w2xbins.title%</h2>
             </div>
@@ -629,7 +668,7 @@
             </div>
           </div>
 
-          <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="ext">
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1">
             <div class="mdl-card__title">
               <h2 class="mdl-card__title-text">%i18n:text.setting.model.title%</h2>
             </div>
@@ -651,7 +690,7 @@
             </div>
           </div>
 
-          <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="ext">
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1">
             <div class="mdl-card__title">
               <h2 class="mdl-card__title-text">%i18n:text.setting.noise.title%</h2>
             </div>
@@ -664,10 +703,41 @@
               </div>
             </div>
           </div>
+      
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">%i18n:text.setting.scale.title%</h2>
+            </div>
+            <div class="mdl-card__supporting-text" id="noise_level_wrap">
+              <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="scale_auto">
+                <input type="checkbox" id="scale_auto" class="mdl-switch__input">
+                <span class="mdl-switch__label">%i18n:text.setting.scale.auto%</span>
+              </label>
+              <div class="mdl-textfield mdl-js-textfield" style="width:100%" id="scale_ratio_wrap">
+                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="scale_ratio">
+                <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.ratio%
+                <br></label>
+                <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror%</span>
+              </div>
+              <div id="scale_auto_wrap" style="display:flex">
+              <div class="mdl-textfield mdl-js-textfield flex_2">
+                <input class="mdl-textfield__input" type="text" pattern="[0-9]*([0-9]+)?" id="scale_auto_w">
+                <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.width%</label>
+                <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror2%</span>
+              </div>
+              <div style="flex: 1 20px; text-align:center; padding: 20px 0">x</div>
+              <div class="mdl-textfield mdl-js-textfield flex_2">
+                <input class="mdl-textfield__input" type="text" pattern="[0-9]*([0-9]+)?" id="scale_auto_h">
+                <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.height%</label>
+                <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror2%</span>
+              </div>
+              </div>
+            </div>
+          </div>
 
         </div>
 
-        <h3>入力設定</h3>
+        <h3>%i18n:text.file_setting%</h3>
         <div style="display: flex; width: 100%; flex-wrap: wrap">
 
           <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="ext">
@@ -675,6 +745,14 @@
               <h2 class="mdl-card__title-text">%i18n:text.setting.ext.title%</h2>
             </div>
             <div class="mdl-card__supporting-text" id="fileformats_inputs">
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1" id="out">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">%i18n:text.setting.out.title%</h2>
+            </div>
+            <div class="mdl-card__supporting-text" id="out_wrap">
             </div>
           </div>
 

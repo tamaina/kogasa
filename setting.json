@@ -42,7 +42,7 @@
                         }
                     }
                 ],
-                "image_val": "art"
+                "image_val": "photo"
             },
             {
                 "name": "upconv_7",
@@ -69,10 +69,10 @@
                 "image_val": "art"
             }
         ],
-        "vendor": "vgg_7"
+        "vendor": "upconv_7"
     },
     "scale_ratio": {
-        "auto": false,
+        "auto": true,
         "scale_ratio": 2,
         "max_width": 1920,
         "max_height": 1080,
@@ -83,7 +83,7 @@
         "enable": "true",
         "percent_ratio": 30
     },
-    "noise_level": "2",
+    "noise_level": "1",
     "file_formats": {
         "png": {
             "enable": true,
@@ -118,7 +118,7 @@
             ]
         },
         "bmp": {
-            "enable": false,
+            "enable": true,
             "mime": "image/bmp",
             "animateable": false,
             "chrome_supported": true,

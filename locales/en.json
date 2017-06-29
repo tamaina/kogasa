@@ -18,6 +18,8 @@
     "file" : "file",
     "DEL": "DELETE ALL",
     "PAUSE": "PAUSE",
+    "processorder": "Processing",
+    "file_setting": "Files",
     "setting": {
       "ext": {
         "title": "Input File Format",
@@ -35,6 +37,18 @@
       },
       "noise": {
         "title": "Denoise level"
+      },
+      "scale": {
+        "title": "Scale",
+        "ratio": "Scale ratio",
+        "numerror": "Number?",
+        "numerror2": "∈N",
+        "auto": "Order by length you wish",
+        "width": "width",
+        "height": "height"
+      },
+      "out": {
+        "title": "Output setting"
       }
     },
     "files": {

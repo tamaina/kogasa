@@ -18,6 +18,8 @@
     "file" : "ファイル",
     "DEL": "すべて削除",
     "PAUSE": "ポーズ",
+    "processorder": "処理設定",
+    "file_setting": "入出力設定",
     "setting": {
       "ext": {
         "title": "入力するファイルの種類",
@@ -35,6 +37,18 @@
       },
       "noise": {
         "title": "デノイズレベル"
+      },
+      "scale": {
+        "title": "拡大率",
+        "ratio": "拡大率",
+        "numerror": "数字を入力してください",
+        "numerror2": "自然数を入力してください",
+        "auto": "完成時の大きさで指定",
+        "width": "横幅",
+        "height": "高さ"
+      },
+      "out": {
+        "title": "ファイル出力設定"
       }
     },
     "files": {
