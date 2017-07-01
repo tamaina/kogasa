@@ -8,9 +8,8 @@
                 "more_option": "-p cpu"
             }
         },
-        "use": "waifu2x-caffe-cui"
+        "use": "waifu2x-converter-cpp"
     },
-    "mode": "auto_scale",
     "model": {
         "vendors": [
             {
@@ -66,24 +65,25 @@
                         }
                     }
                 ],
-                "image_val": "art"
+                "image_val": "photo"
             }
         ],
         "vendor": "upconv_7"
     },
     "scale_ratio": {
         "auto": true,
-        "scale_ratio": 2,
+        "scale_ratio": "2",
         "max_width": 1920,
         "max_height": 1080,
-        "min_width": 1920,
-        "min_height": 1080
+        "min_width": "1024",
+        "min_height": "0"
     },
     "scale_down_before_w2x": {
         "enable": "true",
         "percent_ratio": 30
     },
     "noise_level": "1",
+    "auto_scale": true,
     "file_formats": {
         "png": {
             "enable": true,
@@ -93,10 +93,11 @@
             "w2x_supported": true,
             "extentions": [
                 "png"
-            ]
+            ],
+            "output_option": ""
         },
         "jpeg": {
-            "enable": false,
+            "enable": true,
             "mime": "image/jpeg",
             "animateable": false,
             "chrome_supported": true,
@@ -107,7 +108,7 @@
             ]
         },
         "tiff": {
-            "enable": false,
+            "enable": true,
             "mime": "image/tiff",
             "animateable": false,
             "chrome_supported": true,
@@ -115,7 +116,8 @@
             "extentions": [
                 "tif",
                 "tiff"
-            ]
+            ],
+            "output_option": ""
         },
         "bmp": {
             "enable": true,
@@ -128,14 +130,15 @@
             ]
         },
         "gif": {
-            "enable": false,
+            "enable": true,
             "mime": "image/gif",
             "animateable": true,
             "chrome_supported": true,
             "w2x_supported": true,
             "extentions": [
                 "gif"
-            ]
+            ],
+            "output_option": ""
         },
         "targa": {
             "enable": true,
@@ -145,7 +148,8 @@
             "w2x_supported": true,
             "extentions": [
                 "gif"
-            ]
+            ],
+            "output_option": ""
         },
         "bpg": {
             "enable": true,
@@ -154,8 +158,20 @@
             "chrome_supported": false,
             "w2x_supported": false,
             "extentions": [
-                "gif"
-            ]
+                "bpg"
+            ],
+            "output_option": "lossless=true"
+        },
+        "webp": {
+            "enable": true,
+            "mime": "image/x-webp",
+            "animateable": true,
+            "chrome_supported": true,
+            "w2x_supported": false,
+            "extentions": [
+                "webp"
+            ],
+            "output_option": ""
         },
         "mp4": {
             "enable": true,
@@ -165,44 +181,14 @@
             "w2x_supported": false,
             "extentions": [
                 "gif"
-            ]
+            ],
+            "output_option": ""
         }
     },
     "output": {
         "path": "",
-        "file_format_image": "png",
-        "file_format_movie": "png"
+        "file_format": "png"
     },
-    "log": [
-        [
-            "2017-06-25T18:27:37.208Z"
-        ],
-        [
-            "2017-06-25T18:37:35.260Z"
-        ],
-        [
-            "2017-06-25T18:58:46.540Z"
-        ],
-        [
-            "2017-06-25T19:04:34.602Z"
-        ],
-        [
-            "2017-06-25T19:06:12.370Z"
-        ],
-        [
-            "2017-06-26T09:59:14.068Z"
-        ],
-        [
-            "2017-06-28T14:55:04.133Z"
-        ],
-        [
-            "2017-06-28T14:55:29.229Z"
-        ],
-        [
-            "2017-06-28T15:59:05.995Z"
-        ],
-        [
-            "2017-06-29T16:15:33.593Z"
-        ]
-    ]
+    "parallel": "1",
+    "log": []
 }

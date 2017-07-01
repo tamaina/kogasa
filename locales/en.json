@@ -36,7 +36,8 @@
         "image": ""
       },
       "noise": {
-        "title": "Denoise level"
+        "title": "Denoise level",
+        "autoscale": "不可逆圧縮の画像のみノイズ除去"
       },
       "scale": {
         "title": "Scale",
@@ -45,10 +46,19 @@
         "numerror2": "∈N",
         "auto": "Order by length you wish",
         "width": "width",
-        "height": "height"
+        "height": "height",
+        "auto_description": "Minimum width x Minimum height"
       },
       "out": {
-        "title": "Output setting"
+        "title": "Output setting",
+        "path": "path",
+        "path_d": "",
+        "imgext": "Format(image)",
+        "reset": "Reset"
+      },
+      "process": {
+        "title": "Parallel",
+        "number": "Number"
       }
     },
     "files": {

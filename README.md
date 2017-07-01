@@ -4,7 +4,7 @@
 
 ----
 
-まずelectronの基礎から。
+はじめに[ImageMagick](http://www.imagemagick.org/script/download.php#windows) を導入してください。(必ずpathを通してください。)
 
 ----
 

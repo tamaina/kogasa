@@ -36,7 +36,8 @@
         "image": "画像の種類"
       },
       "noise": {
-        "title": "デノイズレベル"
+        "title": "デノイズレベル",
+        "autoscale": "不可逆圧縮の画像のみノイズ除去"
       },
       "scale": {
         "title": "拡大率",
@@ -45,10 +46,19 @@
         "numerror2": "自然数を入力してください",
         "auto": "完成時の大きさで指定",
         "width": "横幅",
-        "height": "高さ"
+        "height": "高さ",
+        "auto_description": "最小横幅 x 最小高さ"
       },
       "out": {
-        "title": "ファイル出力設定"
+        "title": "ファイル入出力設定",
+        "path": "出力パス",
+        "path_d": "未指定でそれぞれのファイルに直接出力します。",
+        "imgext": "画像の出力フォーマット",
+        "reset": "リセット"
+      },
+      "process": {
+        "title": "同時実行数",
+        "number": "数値"
       }
     },
     "files": {

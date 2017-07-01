@@ -10,6 +10,7 @@
     <script src="./assets/mdl/material.min.js"></script>
     <script src="./assets/mdl/mdl-selectfield.min.js"></script>
     <script>
+    const cwd = process.cwd()
     let _module_exports = module.exports
         _noderequire = window.require
     delete module.exports
@@ -22,6 +23,7 @@
     const fs = require('fs')
           ncrypto = require('crypto')
           nextend = require('extend')
+          tmp = require('tmp')
     const DEBUG = true
           setting_path = "./setting.json"
           i18n = {}
@@ -30,188 +32,206 @@
           display_files_chosen_selector = "#files_chosen"
           display_files_running_selector = "#files_running"
           display_files_finished_selector = ""
+          w2xbin = "w2xbin/"
+          temp = "tmp/"
       let files_chosen = []
           files_running = {}
           files_finished = {}
       // settingの素(settingが無い場合の初期値決定、およびサジェスト用)
       let setting = {
-        "waifu2x": {
-            "binarys": {
-                "waifu2x-converter-cpp": {
-                    "more_option": ""
-                },
-                "waifu2x-caffe-cui": {
-                    "more_option": "-tta 1\n-p cpu"
-                }
-            },
-            "use": "waifu2x-caffe-cui"
-        },
-        "mode": "auto_scale",
-        "model": {
-            "vendors": [
-                {
-                    "name": "vgg_7",
-                    "description": {
-                        "ja": "標準的な処理方法です。",
-                        "en": "Default"
-                    },
-                    "images": [
-                        {
-                            "name": "art",
-                            "description": {
-                                "ja": "アニメや漫画の絵を変換するのに適しています。",
-                                "en": "For paint as anime and manga."
-                            }
-                        },
-                        {
-                            "name": "art_y",
-                            "description": {
-                                "ja": "アニメや漫画の絵を変換するのに適しています。画像の輝度Y成分のみ変換します。",
-                                "en": "For paint as anime and manga. It converts only \"Y\" data."
-                            }
-                        },
-                        {
-                            "name": "photo",
-                            "description": {
-                                "ja": "写真を変換するのに適しています。",
-                                "en": "For photograph."
-                            }
-                        }
-                    ],
-                    "image_val": "art"
-                },
-                {
-                    "name": "upconv_7",
-                    "description": {
-                        "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用料が増えます。",
-                        "en": "Great but heavy"
-                    },
-                    "images": [
-                        {
-                            "name": "art",
-                            "description": {
-                                "ja": "アニメや漫画の絵を変換するのに適しています。",
-                                "en": "For paint as anime and manga."
-                            }
-                        },
-                        {
-                            "name": "photo",
-                            "description": {
-                                "ja": "写真を変換するのに適しています。",
-                                "en": "For photograph."
-                            }
-                        }
-                    ],
-                    "image_val": "art"
-                }
-            ],
-            "vendor": "vgg_7"
-        },
-        "scale_ratio": {
-            "auto": false,
-            "scale_ratio": 2,
-            "max_width": 1920,
-            "max_height": 1080,
-            "min_width": 1920,
-            "min_height": 1080
-        },
-        "scale_down_before_w2x": {
-            "enable": "true",
-            "percent_ratio": 30
-        },
-        "noise_level": 1,
-        "file_formats": {
-            "png": {
-                "enable": true,
-                "mime": "image/png",
-                "animateable": false,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "png"
-                ]
-            },
-            "jpeg": {
-                "enable": true,
-                "mime": "image/jpeg",
-                "animateable": false,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "jpeg",
-                    "jpg"
-                ]
-            },
-            "tiff": {
-                "enable": true,
-                "mime": "image/tiff",
-                "animateable": false,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "tif",
-                    "tiff"
-                ]
-            },
-            "bmp": {
-                "enable": true,
-                "mime": "image/bmp",
-                "animateable": false,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "bmp"
-                ]
-            },
-            "gif": {
-                "enable": true,
-                "mime": "image/gif",
-                "animateable": true,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "gif"
-                ]
-            },
-            "targa": {
-                "enable": true,
-                "mime": "image/x-targa",
-                "animateable": true,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "gif"
-                ]
-            },
-            "bpg": {
-                "enable": true,
-                "mime": "image/x-bpg",
-                "animateable": true,
-                "chrome_supported": false,
-                "w2x_supported": false,
-                "extentions": [
-                    "gif"
-                ]
-            },
-            "mp4": {
-                "enable": true,
-                "mime": "video/mp4",
-                "animateable": true,
-                "chrome_supported": true,
-                "w2x_supported": false,
-                "extentions": [
-                    "gif"
-                ]
-            }
-        },
-        "output": {
-            "path": "",
-            "file_format_image": "png",
-            "file_format_movie": "png"
-        },
-        "log": [
-        ]
-    }
+          "waifu2x": {
+              "binarys": {
+                  "waifu2x-converter-cpp": {
+                      "more_option": ""
+                  },
+                  "waifu2x-caffe-cui": {
+                      "more_option": "-p cpu"
+                  }
+              },
+              "use": "waifu2x-converter-cpp"
+          },
+          "model": {
+              "vendors": [
+                  {
+                      "name": "vgg_7",
+                      "description": {
+                          "ja": "標準的な処理方法です。",
+                          "en": "Default"
+                      },
+                      "images": [
+                          {
+                              "name": "art",
+                              "description": {
+                                  "ja": "アニメや漫画の絵を変換するのに適しています。",
+                                  "en": "For paint as anime and manga."
+                              }
+                          },
+                          {
+                              "name": "art_y",
+                              "description": {
+                                  "ja": "アニメや漫画の絵を変換するのに適しています。画像の輝度Y成分のみ変換します。",
+                                  "en": "For paint as anime and manga. It converts only \"Y\" data."
+                              }
+                          },
+                          {
+                              "name": "photo",
+                              "description": {
+                                  "ja": "写真を変換するのに適しています。",
+                                  "en": "For photograph."
+                              }
+                          }
+                      ],
+                      "image_val": "photo"
+                  },
+                  {
+                      "name": "upconv_7",
+                      "description": {
+                          "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用量が増えます。",
+                          "en": "Great but heavy"
+                      },
+                      "images": [
+                          {
+                              "name": "art",
+                              "description": {
+                                  "ja": "アニメや漫画の絵を変換するのに適しています。",
+                                  "en": "For paint as anime and manga."
+                              }
+                          },
+                          {
+                              "name": "photo",
+                              "description": {
+                                  "ja": "写真を変換するのに適しています。",
+                                  "en": "For photograph."
+                              }
+                          }
+                      ],
+                      "image_val": "photo"
+                  }
+              ],
+              "vendor": "upconv_7"
+          },
+          "scale_ratio": {
+              "auto": false,
+              "scale_ratio": "45",
+              "max_width": 1920,
+              "max_height": 1080,
+              "min_width": 0,
+              "min_height": 0
+          },
+          "scale_down_before_w2x": {
+              "enable": "true",
+              "percent_ratio": 30
+          },
+          "noise_level": "1",
+          "auto_scale": false,
+          "file_formats": {
+              "png": {
+                  "enable": true,
+                  "mime": "image/png",
+                  "animateable": false,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "png"
+                  ],
+                  "output_option": ""
+              },
+              "jpeg": {
+                  "enable": true,
+                  "mime": "image/jpeg",
+                  "animateable": false,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "jpeg",
+                      "jpg"
+                  ]
+              },
+              "tiff": {
+                  "enable": true,
+                  "mime": "image/tiff",
+                  "animateable": false,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "tif",
+                      "tiff"
+                  ],
+                  "output_option": ""
+              },
+              "bmp": {
+                  "enable": true,
+                  "mime": "image/bmp",
+                  "animateable": false,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "bmp"
+                  ]
+              },
+              "gif": {
+                  "enable": true,
+                  "mime": "image/gif",
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "gif"
+                  ],
+                  "output_option": ""
+              },
+              "targa": {
+                  "enable": true,
+                  "mime": "image/x-targa",
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "gif"
+                  ],
+                  "output_option": ""
+              },
+              "bpg": {
+                  "enable": true,
+                  "mime": "image/x-bpg",
+                  "animateable": true,
+                  "chrome_supported": false,
+                  "w2x_supported": false,
+                  "extentions": [
+                      "bpg"
+                  ],
+                  "output_option": "lossless=true"
+              },
+              "webp": {
+                  "enable": true,
+                  "mime": "image/x-webp",
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": false,
+                  "extentions": [
+                      "webp"
+                  ],
+                  "output_option": ""
+              },
+              "mp4": {
+                  "enable": true,
+                  "mime": "video/mp4",
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": false,
+                  "extentions": [
+                      "gif"
+                  ],
+                  "output_option": ""
+              }
+          },
+          "output": {
+              "path": "",
+              "file_format": "png"
+          },
+          "parallel": 1,
+          "log": []
+      }
     if(DEBUG) console.log(setting)
       let savedata = require(setting_path)
     if(DEBUG) console.log(savedata)
@@ -219,7 +239,9 @@
       
     if(DEBUG) console.log(setting)
   
+    if(DEBUG) console.log(tmp)
     if(DEBUG) console.log(i18n)
+    if(DEBUG) console.log(cwd)
 
     $(document).on('dragover drop',function(e) {
       e.preventDefault()
@@ -261,21 +283,35 @@
           switch(returntype){
             case 'text': answer = "directory"; break;
             case 'isReadable' : answer = false; break;
+            case 'isDirectory': answer = true; break;
+            case 'isEnable' : answer = true; break;
           }
         } else {
           if(DEBUG) console.log(file.type)
           switch(returntype){
-            case 'text': answer = file.type; break;
+            case 'text': 
+              if(file.type != "") answer = file.type
+              else if(type(file,"isReadable")) answer = setting.file_formats[type(file,"isReadable")].mime
+              else answer = false
+              break
             case 'isReadable' : 
               for( var key in setting.file_formats ){
                 if(DEBUG) console.log(key + ",mime:" + setting.file_formats[key].mime)
                 if(setting.file_formats[key].mime == file.type ){
                   answer = key
-                } else if ( file.path.slice( -1 * key.length ) == key ){
-                  answer = key
+                } else {
+                  for(let i = 0; i < setting.file_formats[key].extentions.length; i++){
+                    if(file.before.x == setting.file_formats[key].extentions[i]){ answer = key; break; }
+                  }
                 }
               }
               break
+            case 'isDirectory': answer = false; break;
+            case 'isEnable':
+              for( let key in setting.file_formats ){
+                if(setting.file_formats[key].enable && [key] == type(file,"isReadable")){ answer = true; break; }
+              }
+              break;
           }
         }
         if(DEBUG) console.log(answer)
@@ -293,21 +329,15 @@
         // 選択済みファイルの出力
         for(let i = 0; i < files_chosen.length; i++){
           let numbering = i + 1
-              typeImage = new Image
               _this = files_chosen[i]
               mimetype = type(_this,'text')
               isReadable = type(_this,'isReadable')
-              imageWidth = 0
-              imageHeight = 0
-          if(isReadable){
-            typeImage.src = new FileReader().readAsDataURL(_this)
-          }
-          files_chosen_html += "<p class='changeable pb-0'>" + numbering + " " + delete_html_before + i + delete_html_after + _this.path + " (" + mimetype
+              
+          files_chosen_html += `<p class="changeable p-0 m-0">${numbering} <img src="${_this.path}" style="height: 2em" />${delete_html_before}${i}${delete_html_after}${_this.path}(${mimetype}`
           if(DEBUG) console.table()
           if(isReadable){
-            imageWidth = typeImage.width
-            imageHeight = typeImage.height
-            files_chosen_html += "," + isReadable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
+            if(DEBUG) console.log(_this.image.width+"x"+_this.image.height)
+            files_chosen_html += "," + isReadable + "," + Number(_this.size) + "," + _this.image.width + "x" + _this.image.height + ")" + "</p>"
           } else {
             files_chosen_html +=")" + "</p>"
           }
@@ -323,12 +353,8 @@
           let _this = files_running[key].file
               mimetype = type(_this,'text')
               isReadable = type(_this,'isReadable')
-              imageWidth = 0
-              imageHeight = 0
           if(DEBUG) console.table()
-          imageWidth = _image.width
-          imageHeight = _image.height
-          files_running_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + imageWidth + "x" + imageHeight + ")" + "</p>"
+          files_running_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + _this.image.width + "x" + _this.image.height + ")" + "</p>"
         }
         if(files_running_html.length < 2) files_running_html = "%i18n:text.files.nofile%"
         $(display_files_running_selector).html(files_running_html.replace(/%i18n:(.+?)%/g,replace_i18n))
@@ -350,11 +376,9 @@
       $("button[name='do']").on('click',function(e){
         e.preventDefault()
         for(let i = 0; i < files_chosen.length; i++ ){
-          if($(`#input_fileformats_${type(files_chosen[i],'isReadable')}`).prop('checked') == true){
-            let thisImage = new Image
-            thisImage.src = files_chosen[i].path
-            thisImage.onLoad = w2x_run(files_chosen[i],thisImage)
-          } else if(type(files_chosen[i],'text') == 'directory') {
+          if(type(files_chosen[i],"isEnable")){
+            w2x_run(files_chosen[i])
+          } else if(type(files_chosen[i],'isDirectory')) {
             w2x_directory(files_chosen[i])
           }
         }
@@ -368,6 +392,25 @@
         e.preventDefault();
         let this_input = e.originalEvent.dataTransfer.files
         let buffer = new Array
+        // 分別なくimage要素を押し込みます
+        for(let i = 0; i < e.originalEvent.dataTransfer.files.length; i++){
+          let _this = e.originalEvent.dataTransfer.files[i]
+              image= new Image
+          let isDirectory =type(_this,'isDirectory')
+          image.src=_this.path
+          e.originalEvent.dataTransfer.files[i].image = image
+          if(DEBUG) console.log(image)
+          e.originalEvent.dataTransfer.files[i].before = {}
+          e.originalEvent.dataTransfer.files[i].before.d = _this.path.substr(0,3)
+          e.originalEvent.dataTransfer.files[i].before.p = _this.path.substr(3, _this.path.length - 3 - _this.name.length)
+          if(isDirectory){
+            e.originalEvent.dataTransfer.files[i].before.n = _this.name
+            e.originalEvent.dataTransfer.files[i].before.x = ""
+          } else {
+            e.originalEvent.dataTransfer.files[i].before.n = _this.name.slice(0,_this.name.lastIndexOf("."))
+            e.originalEvent.dataTransfer.files[i].before.x = _this.name.substr(_this.name.lastIndexOf("."))
+          }
+        }
         if(DEBUG) console.table(this_input)
         if(DEBUG) console.table(files_chosen)
         Array.prototype.push.apply(buffer,this_input)
@@ -384,7 +427,7 @@
           if(DEBUG) console.log(can_add)
           return can_add
         })
-        changed_files_list()
+        setTimeout(changed_files_list,100)
       })
 
 
@@ -422,29 +465,6 @@
       /*                                                                 */
       /* *************************************************************** */
 
-      /////////////////////////////////////////////////////////////////
-      // fileformats                                                 //
-      // 入力ファイルフォーマット                                    //
-      /////////////////////////////////////////////////////////////////
-      function fileformats_html(){
-        let answer = ""
-        for(let key in setting.file_formats){
-          let _this = setting.file_formats[key]
-          answer += `
-          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="input_fileformats_${key}">
-            <input type="checkbox" id="input_fileformats_${key}" class="mdl-checkbox__input" value="${key}" checked>
-            <span class="mdl-checkbox__label">${key}</span>
-          </label>
-          `
-        }
-        return answer
-      }
-      $("#fileformats_inputs").html(fileformats_html())
-      // 変更検知
-      $("input[id^='input_fileformats_']").on('change',function(){
-        setting.file_formats[$(this).val()].enable = $(this).prop("checked")
-        save()
-      })
 
       /////////////////////////////////////////////////////////////////
       // w2xbins                                                     //
@@ -486,8 +506,7 @@
       // 利用するモデル                                              //
       /////////////////////////////////////////////////////////////////
       function model_vendor_html(){
-        let answer=`<option value=""></option>
-        `
+        let answer=""
         let images_form=""
         for(let i = 0; i < setting.model.vendors.length; i++){
           let _this = setting.model.vendors[i]
@@ -504,7 +523,6 @@
         answer+=`
                 <div class="mdl-selectfield mdl-js-selectfield model_image_selectfields_wrap mdl-textfield--floating-label p-0" id="model_image_${vendor_name}" data-vendor="${vendor_name}" data-vendor-number="${i}">
                   <select id="selectform_model_image_${vendor_name}" class="mdl-selectfield__select model_image_selectfield" data-vendor="${vendor_name}" data-vendor-number="${i}">
-                    <option value=""></option>
         `
         for(let j = 0; j < setting.model.vendors[i].images.length; j++){
           let _this = setting.model.vendors[i].images[j]
@@ -522,7 +540,7 @@
       $("#model_vendor").html(model_vendor_html)
 
       // 初期設定処理
-      $("#model_vendor").prop("value",setting.model.vendor)
+      $("#model_vendor").val(setting.model.vendor)
       for(let i = 0; i < setting.model.vendors.length; i++){
         if(setting.model.vendors[i].name == setting.model.vendor){
           $("#model_vendor_description").html(function(){
@@ -538,7 +556,7 @@
       function model_image_change(vendor_num){
         $(".model_image_selectfields_wrap").hide()
         $(".model_image_selectfields_wrap[data-vendor-number='"+ vendor_num +"']").show()
-        $(".model_image_selectfield[data-vendor-number='"+ vendor_num +"']").prop("value",setting.model.vendors[vendor_num].image_val).trigger('change')
+        $(".model_image_selectfield[data-vendor-number='"+ vendor_num +"']").val(setting.model.vendors[vendor_num].image_val).trigger('change')
       }
       // 変更検知
       $("#model_vendor").on("change",function(){
@@ -566,6 +584,7 @@
           else if(a == undefined) a = ""
           return a
         })
+        save()
       })
 
       model_image_change($(`option[value="${setting.model.vendor}"]`).attr("data-number"))
@@ -588,16 +607,50 @@
       })
       $("#noise_level").get(0).MaterialSlider.change(setting.noise_level)
       $("#noise_level").trigger("change")
+      function auto_scale_wrap_html(){
+        let answer=""
+            checked=""
+        if(setting.auto_scale == true) checked += "checked"
+        answer+=`
+          <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="auto_scale" id="auto_scale_label">
+            <input type="checkbox" name"auto_scale" id="auto_scale" class="mdl-switch__input" ${checked}>
+            <span class="mdl-switch__label">%i18n:text.setting.noise.autoscale%</span>
+          </label>
+        `
+        return answer
+      }
+      $("#auto_scale_wrap").html(auto_scale_wrap_html().replace(/%i18n:(.+?)%/g,replace_i18n))
+      $("#auto_scale").trigger("change")
+      $("#auto_scale").on("change",function(){
+        setting.auto_scale = $(this).prop("checked")
+        save()
+      })
+
 
       /////////////////////////////////////////////////////////////////
-      // noise_level                                                 //
-      // デノイズレベル                                              //
+      // sclae_ratio                                                 //
+      // 拡大率                                                      //
       /////////////////////////////////////////////////////////////////
+      function scale_auto_switch_html(){
+        let answer=""
+            checked=""
+        if(setting.scale_ratio.auto == true) checked += "checked"
+        answer+=`
+          <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="scale_auto" id="scale_auto_label">
+            <input type="checkbox" name"scale_auto" id="scale_auto" class="mdl-switch__input" ${checked}>
+            <span class="mdl-switch__label">%i18n:text.setting.scale.auto%</span>
+          </label>
+        `
+        return answer
+      }
+      $("#scale_auto_switch_wrap").html(scale_auto_switch_html().replace(/%i18n:(.+?)%/g,replace_i18n))
+      $("#scale_auto").trigger("change")
+
       // 初期設定
       $("#scale_auto").prop("checked",setting.scale_ratio.auto).trigger("change")
-      $("#scale_ratio").prop("value",setting.scale_ratio.scale_ratio).trigger("change")
-      $("#scale_auto_h").prop("value",setting.scale_ratio.min_height).trigger("change")
-      $("#scale_auto_w").prop("value",setting.scale_ratio.min_width).trigger("change")
+      $("#scale_ratio").val(setting.scale_ratio.scale_ratio).trigger("change")
+      $("#scale_auto_h").val(setting.scale_ratio.min_height).trigger("change")
+      $("#scale_auto_w").val(setting.scale_ratio.min_width).trigger("change")
 
       // 変更検知
       $("#scale_auto").on("change",function(){
@@ -611,6 +664,7 @@
           $("#scale_ratio_wrap").show()
           $("#scale_auto_wrap").hide()
         }
+        save()
       })
       function scale_auto_load(){
         if($("#scale_auto").prop("checked")){
@@ -625,14 +679,126 @@
         }
       }
       scale_auto_load()
-      $("#scale_ratio").on("change",function(){setting.scale_ratio.scale_ratio = $(this).val()})
-      $("#scale_auto_h").on("change",function(){setting.scale_ratio.min_height = $(this).val()})
-      $("#scale_auto_w").on("change",function(){setting.scale_ratio.min_width = $(this).val()})
+      $("#scale_ratio").on("change",function(){
+        if($(this).val() < 1){
+          $(this).val(2).trigger("change")
+          return false
+        }
+        setting.scale_ratio.scale_ratio = $(this).val()
+        if($(this).val() == ""){
+          setting.scale_ratio.scale_ratio = 0
+          $(this).val(0)
+        }
+        save()
+      })
+      $("#scale_auto_h").on("change",function(){
+        if($(this).val() == "" && $("#scale_auto_w").val() == 0){
+          $(this).val(1024).trigger("change")
+          return false
+        }
+        if($(this).val() == 0 && $("#scale_auto_w").val() == 0){
+          $(this).val(1024).trigger("change")
+          return false
+        }
+        setting.scale_ratio.min_height = $(this).val()
+        if($(this).val() == ""){
+          setting.scale_ratio.min_height = 0
+          $(this).val(0)
+        }
+        save()
+      })
+      $("#scale_auto_w").on("change",function(){
+        if($(this).val() == "" && $("#scale_auto_h").val() == 0){
+          $(this).val(1024).trigger("change")
+          return false
+        }
+        if($(this).val() == 0 && $("#scale_auto_h").val() == 0){
+          $(this).val(1024).trigger("change")
+          return false
+        }
+        setting.scale_ratio.min_width = $(this).val()
+        if($(this).val() == ""){
+          setting.scale_ratio.min_width = 0
+          $(this).val(0)
+        }
+        save()
+      })
+
+      $("#parallel").val(setting.parallel).trigger("change")
+      $("#parallel").on('change',function(){
+        if($(this).val() == 0){
+          $(this).val(1).trigger("change")
+          return false
+        }
+        setting.parallel = $(this).val()
+      })
+      /////////////////////////////////////////////////////////////////
+      // fileformats                                                 //
+      // 入力ファイルフォーマット                                    //
+      /////////////////////////////////////////////////////////////////
+      function fileformats_html(){
+        let answer = ""
+        for(let key in setting.file_formats){
+          let _this = setting.file_formats[key]
+              checked = ""
+          if(_this.enable) checked += "checked"
+          answer += `
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="input_fileformats_${key}">
+            <input type="checkbox" id="input_fileformats_${key}" class="mdl-checkbox__input" value="${key}" ${checked}>
+            <span class="mdl-checkbox__label">${key}</span>
+          </label>
+          `
+        }
+        return answer
+      }
+      $("#fileformats_inputs").html(fileformats_html())
+      // 変更検知
+      $("input[id^='input_fileformats_']").on('change',function(){
+        setting.file_formats[$(this).val()].enable = $(this).prop("checked")
+        save()
+      })
+      /////////////////////////////////////////////////////////////////
+      // output                                                      //
+      // 出力設定                                                    //
+      /////////////////////////////////////////////////////////////////
+      function output_exts_html(){
+        let answer = ""
+        for(let key in setting.file_formats){
+          let _this = setting.file_formats[key]
+          if(_this.mime.indexOf("image") > -1){
+            answer += `
+            <option>${key}</option>
+            `
+          }
+        }
+        return answer
+      }
+      $("#output_format_image").html(output_exts_html())
+      $("#output_format_image").val(setting.output.file_format).trigger("change")
+      $("#output_format_image").on("change",function(){
+        setting.output.file_format = $(this).val()
+        $("#output_format_image_option").val(setting.file_formats[$(this).val()].output_option).trigger("change")
+        save()
+      })
+      $("#output_format_image_option").on("change",function(){
+        setting.file_formats[$("#output_format_image").val()].output_option = $(this).val()
+        save()
+      })
+
+      $("#output_path").val(setting.output.path).trigger("change")
+      $("#output_path").on("change",function(){
+        setting.output.path = $(this).val()
+        save()
+      })
+      $("#resetoutputpath").on("click",function(){
+        $("#output_path").val("").trigger("change")
+      })
+
       changed_files_list()
     })
     
     $(window).on('load',function(){
-      componentHandler.upgradeDom('input,textarea,select');
+      setTimeout(function(){componentHandler.upgradeAllRegistered();},500)
     })
     </script>
   </head>
@@ -673,7 +839,7 @@
               <h2 class="mdl-card__title-text">%i18n:text.setting.model.title%</h2>
             </div>
             <div class="mdl-card__supporting-text">
-              <h5>処理</h5>
+              <h5>%i18n:text.setting.model.vendor%</h5>
               <div id="model_vendor_wrap">
                 <div class="mdl-selectfield mdl-js-selectfieldm dl-textfield--floating-label p-0">
                   <select id="model_vendor" name="model_vendor" class="mdl-selectfield__select">
@@ -683,7 +849,7 @@
                 </div>
               </div>
               <p class="pb-1" id="model_vendor_description"></p>
-              <h5>画像の種類</h5>
+              <h5>%i18n:text.setting.model.image%</h5>
               <div id="model_image_wrap">
               </div>
               <p class="pb-1" id="model_image_description"></p>
@@ -694,13 +860,14 @@
             <div class="mdl-card__title">
               <h2 class="mdl-card__title-text">%i18n:text.setting.noise.title%</h2>
             </div>
-            <div class="mdl-card__supporting-text" id="noise_level_wrap" style="display:flex">
-              <div style="flex: 1 250px">
+            <div class="mdl-card__supporting-text" id="noise_level_wrap" style="display:flex; flex-wrap:wrap">
+              <div style="flex: 4 250px">
                 <input class="mdl-slider mdl-js-slider p-0" type="range" id="noise_level" min="0" max="3" step="1">
               </div>
-              <div style="width: 40px">
+              <div style="flex: 1 40px">
                 <p class="slider_disp" id="noise_level_disp"></p>
               </div>
+              <div id="auto_scale_wrap" style="display:inline-block;flex: 5 100%"></div>
             </div>
           </div>
       
@@ -709,28 +876,38 @@
               <h2 class="mdl-card__title-text">%i18n:text.setting.scale.title%</h2>
             </div>
             <div class="mdl-card__supporting-text" id="noise_level_wrap">
-              <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="scale_auto">
-                <input type="checkbox" id="scale_auto" class="mdl-switch__input">
-                <span class="mdl-switch__label">%i18n:text.setting.scale.auto%</span>
-              </label>
-              <div class="mdl-textfield mdl-js-textfield" style="width:100%" id="scale_ratio_wrap">
-                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="scale_ratio">
-                <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.ratio%
-                <br></label>
+              <div id="scale_auto_switch_wrap"></div>
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:100%" id="scale_ratio_wrap">
+                <input class="mdl-textfield__input" type="text" pattern="[0-9]*(\.[0-9]+)?" id="scale_ratio">
+                <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.ratio%</label>
                 <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror%</span>
               </div>
-              <div id="scale_auto_wrap" style="display:flex">
-              <div class="mdl-textfield mdl-js-textfield flex_2">
-                <input class="mdl-textfield__input" type="text" pattern="[0-9]*([0-9]+)?" id="scale_auto_w">
-                <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.width%</label>
-                <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror2%</span>
+              <div id="scale_auto_wrap" style="display:flex; flex-wrap:wrap">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label flex_2">
+                  <input class="mdl-textfield__input" type="text" pattern="[0-9]*([0-9]+)?" id="scale_auto_w">
+                  <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.width%</label>
+                  <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror2%</span>
+                </div>
+                <div style="flex: 1 20px; text-align:center; padding: 20px 0">x</div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label flex_2">
+                  <input class="mdl-textfield__input" type="text" pattern="[0-9]*([0-9]+)?" id="scale_auto_h">
+                  <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.height%</label>
+                  <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror2%</span>
+                </div>
+                <p class="pb-1" style="flex:1 100%">%i18n:text.setting.scale.auto_description%</p>
               </div>
-              <div style="flex: 1 20px; text-align:center; padding: 20px 0">x</div>
-              <div class="mdl-textfield mdl-js-textfield flex_2">
-                <input class="mdl-textfield__input" type="text" pattern="[0-9]*([0-9]+)?" id="scale_auto_h">
-                <label class="mdl-textfield__label" for="scale_ratio">%i18n:text.setting.scale.height%</label>
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">%i18n:text.setting.process.title%</h2>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:100%">
+                <input class="mdl-textfield__input" type="text" pattern="[0-9]*([0-9]+)?" id="parallel">
+                <label class="mdl-textfield__label" for="parallel">%i18n:text.setting.process.number%</label>
                 <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror2%</span>
-              </div>
               </div>
             </div>
           </div>
@@ -753,6 +930,25 @@
               <h2 class="mdl-card__title-text">%i18n:text.setting.out.title%</h2>
             </div>
             <div class="mdl-card__supporting-text" id="out_wrap">
+              <h5>%i18n:text.setting.out.path%</h5>
+              <p>%i18n:text.setting.out.path_d%</p>
+              <label>
+                <input type="file" id="output_path" name="output_path" webkitdirectory directory>
+              </label>
+              <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="resetoutputpath" name="resetoutputpath" style="margin-left: 0.25em">
+                %i18n:text.setting.out.reset%
+              </a>
+              <h5>%i18n:text.setting.out.imgext%</h5>
+              <div class="mdl-selectfield mdl-js-selectfieldm dl-textfield--floating-label p-0">
+                <select id="output_format_image" name="output_format_image" class="mdl-selectfield__select">
+                </select>
+                <label class="mdl-selectfield__label" for="output_format_image"></label>
+                <span class="mdl-selectfield__error">%i18n:text.error.selectavalue%</span>
+              </div>
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <textarea class="mdl-textfield__input" type="text" rows="1" id="output_format_image_option" name"output_format_image_option"></textarea>
+                <label class="mdl-textfield__label" for="output_format_image_option">Option</label>
+              </div>
             </div>
           </div>
 
