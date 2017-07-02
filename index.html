@@ -291,6 +291,11 @@
       function type(file,returntype){ 
         if(DEBUG) console.log(file)
         let answer = false
+        try{
+          fs.statSync(file.path)
+        } catch(e){
+          return false
+        }
         if(fs.statSync(file.path).isDirectory()){
           switch(returntype){
             case 'text': answer = "directory"; break;
@@ -454,10 +459,8 @@
       $("button[name='do']").on('click',function(e){
         e.preventDefault()
         for(let i = 0; i < files_chosen.length; i++ ){
-          if(files_chosen[i].type.indexOf("video") != -1 && type(files_chosen[i],"isEnable")){
+          if(setting.file_formats[type(files_chosen[i],"isReadable")].animateable && type(files_chosen[i],"isEnable")){
             mov_register(files_chosen[i])
-          } else if(setting.file_formats[type(files_chosen[i],"isReadable")].animateable){
-            anm_register(files_chosen[i])
           } else if(type(files_chosen[i],"isEnable")){
             img_register(files_chosen[i])
           } else if(type(files_chosen[i],'isDirectory')) {
@@ -469,31 +472,15 @@
           // setTimeout(converter,i*128)
         }
         changed_files_list()
-        // rmdirForceSync(temp)
+        
       })
-      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; changed_files_list() })
+      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; rmdirForceSync(temp); fs.mkdirSync(temp); changed_files_list() })
 
       function converter(){
         return false
       }
 
-
-      function anm_register(file){
-        if(DEBUG) console.log(file.name + " register as animation")
-        let log,
-            logstr
-        log = execSync(`magick identify "${file.path}"`)
-        logstr = String.fromCharCode.apply(null, new Uint8Array(log))
-        if(DEBUG) console.log( logstr.length)
-        if(DEBUG) console.log( logstr.indexOf("\n"))
-        if( logstr.length - 1 == logstr.indexOf("\n") ){
-          img_register(file)
-        } else {
-          mov_register(file)
-        }
-      }
-
-      // 動画登録
+      // 動画・アニメーション登録
       function mov_register(file){
         if(DEBUG) console.log(file.name + " register as movie")
         let dist = `${temp}\\anm\\${file.before.n}`
@@ -502,6 +489,11 @@
         fs.mkdirSync(`${temp}\\anm`)
         fs.mkdirSync(dist)
         execSync(`ffmpeg -i "${file.path}" -f image2 -vcodec ${tmp_ext} "${dist}\\%09d.${tmp_ext}"`)
+        if(fs.readdirSync(dist).length == 1){
+          rmdirForceSync(dist)
+          img_register(file)
+          return false
+        }
         log = execSync(`magick identify "${dist}\\000000001.${tmp_ext}"`)
         logstr = String.fromCharCode.apply(null, new Uint8Array(log))
         let str_x = logstr.split(" ")[3].split("x")
