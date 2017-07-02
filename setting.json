@@ -8,7 +8,7 @@
                 "more_option": "-p cpu"
             }
         },
-        "use": "waifu2x-converter-cpp"
+        "use": "waifu2x-caffe-cui"
     },
     "model": {
         "vendors": [
@@ -41,7 +41,7 @@
                         }
                     }
                 ],
-                "image_val": "photo"
+                "image_val": "art_y"
             },
             {
                 "name": "upconv_7",
@@ -68,27 +68,24 @@
                 "image_val": "photo"
             }
         ],
-        "vendor": "upconv_7"
+        "vendor": "vgg_7"
     },
     "scale_ratio": {
         "auto": true,
         "scale_ratio": "2",
         "max_width": 1920,
         "max_height": 1080,
-        "min_width": "1024",
+        "min_width": "200",
         "min_height": "0"
     },
-    "scale_down_before_w2x": {
-        "enable": "true",
-        "percent_ratio": 30
-    },
-    "noise_level": "1",
+    "noise_level": "0",
     "auto_scale": true,
     "file_formats": {
         "png": {
             "enable": true,
             "mime": "image/png",
-            "animateable": false,
+            "lossy": false,
+            "animateable": true,
             "chrome_supported": true,
             "w2x_supported": true,
             "extentions": [
@@ -99,6 +96,7 @@
         "jpeg": {
             "enable": true,
             "mime": "image/jpeg",
+            "lossy": true,
             "animateable": false,
             "chrome_supported": true,
             "w2x_supported": true,
@@ -110,6 +108,7 @@
         "tiff": {
             "enable": true,
             "mime": "image/tiff",
+            "lossy": true,
             "animateable": false,
             "chrome_supported": true,
             "w2x_supported": true,
@@ -122,6 +121,7 @@
         "bmp": {
             "enable": true,
             "mime": "image/bmp",
+            "lossy": false,
             "animateable": false,
             "chrome_supported": true,
             "w2x_supported": true,
@@ -132,6 +132,7 @@
         "gif": {
             "enable": true,
             "mime": "image/gif",
+            "lossy": false,
             "animateable": true,
             "chrome_supported": true,
             "w2x_supported": true,
@@ -143,17 +144,19 @@
         "targa": {
             "enable": true,
             "mime": "image/x-targa",
+            "lossy": true,
             "animateable": true,
             "chrome_supported": true,
             "w2x_supported": true,
             "extentions": [
-                "gif"
+                "tga"
             ],
             "output_option": ""
         },
         "bpg": {
             "enable": true,
             "mime": "image/x-bpg",
+            "lossy": false,
             "animateable": true,
             "chrome_supported": false,
             "w2x_supported": false,
@@ -165,30 +168,37 @@
         "webp": {
             "enable": true,
             "mime": "image/x-webp",
+            "lossy": false,
             "animateable": true,
             "chrome_supported": true,
             "w2x_supported": false,
             "extentions": [
                 "webp"
             ],
-            "output_option": ""
+            "output_option": "-lossless"
         },
         "mp4": {
             "enable": true,
             "mime": "video/mp4",
+            "lossy": true,
             "animateable": true,
             "chrome_supported": true,
             "w2x_supported": false,
             "extentions": [
-                "gif"
+                "mp4"
             ],
             "output_option": ""
         }
     },
     "output": {
         "path": "",
-        "file_format": "png"
+        "file_format": "webp"
     },
-    "parallel": "1",
-    "log": []
+    "parallel": "10",
+    "log": [
+        [
+            "2017-07-02T14:09:59.910Z"
+        ]
+    ],
+    "scale_down_ratio": 1
 }

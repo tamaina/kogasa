@@ -59,6 +59,10 @@
       "process": {
         "title": "Parallel",
         "number": "Number"
+      },
+      "scaledown": {
+        "title": "Scale down before w2x",
+        "number": "Number(0~1)"
       }
     },
     "files": {

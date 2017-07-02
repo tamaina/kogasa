@@ -59,6 +59,10 @@
       "process": {
         "title": "同時実行数",
         "number": "数値"
+      },
+      "scaledown": {
+        "title": "waifu2x処理前に縮小",
+        "number": "割合(0より大きく1以下)"
       }
     },
     "files": {

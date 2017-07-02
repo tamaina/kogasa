@@ -11,7 +11,7 @@
     <script src="./assets/mdl/mdl-selectfield.min.js"></script>
     <script>
     const cwd = process.cwd()
-    let _module_exports = module.exports
+    let _module_exports = module.exports,
         _noderequire = window.require
     delete module.exports
     const $ = window.jQuery = require('./assets/jquery/jquery.min.js')
@@ -24,6 +24,7 @@
           ncrypto = require('crypto')
           nextend = require('extend')
           tmp = require('tmp')
+          execSync = require('child_process').execSync
     const DEBUG = true
           setting_path = "./setting.json"
           i18n = {}
@@ -33,7 +34,8 @@
           display_files_running_selector = "#files_running"
           display_files_finished_selector = ""
           w2xbin = "w2xbin/"
-          temp = "tmp/"
+          temp = "" + tmp.tmpdir + "\\kogasa"
+          tmp_ext = "png"
       let files_chosen = []
           files_running = {}
           files_finished = {}
@@ -48,7 +50,7 @@
                       "more_option": "-p cpu"
                   }
               },
-              "use": "waifu2x-converter-cpp"
+              "use": "waifu2x-caffe-cui"
           },
           "model": {
               "vendors": [
@@ -81,7 +83,7 @@
                               }
                           }
                       ],
-                      "image_val": "photo"
+                      "image_val": "art_y"
                   },
                   {
                       "name": "upconv_7",
@@ -108,26 +110,23 @@
                       "image_val": "photo"
                   }
               ],
-              "vendor": "upconv_7"
+              "vendor": "vgg_7"
           },
           "scale_ratio": {
-              "auto": false,
-              "scale_ratio": "45",
+              "auto": true,
+              "scale_ratio": "2",
               "max_width": 1920,
               "max_height": 1080,
-              "min_width": 0,
-              "min_height": 0
+              "min_width": "1",
+              "min_height": "0"
           },
-          "scale_down_before_w2x": {
-              "enable": "true",
-              "percent_ratio": 30
-          },
-          "noise_level": "1",
-          "auto_scale": false,
+          "noise_level": "0",
+          "auto_scale": true,
           "file_formats": {
               "png": {
                   "enable": true,
                   "mime": "image/png",
+                  "lossy": false,
                   "animateable": false,
                   "chrome_supported": true,
                   "w2x_supported": true,
@@ -139,6 +138,7 @@
               "jpeg": {
                   "enable": true,
                   "mime": "image/jpeg",
+                  "lossy": true,
                   "animateable": false,
                   "chrome_supported": true,
                   "w2x_supported": true,
@@ -150,6 +150,7 @@
               "tiff": {
                   "enable": true,
                   "mime": "image/tiff",
+                  "lossy": true,
                   "animateable": false,
                   "chrome_supported": true,
                   "w2x_supported": true,
@@ -162,6 +163,7 @@
               "bmp": {
                   "enable": true,
                   "mime": "image/bmp",
+                  "lossy": false,
                   "animateable": false,
                   "chrome_supported": true,
                   "w2x_supported": true,
@@ -172,6 +174,7 @@
               "gif": {
                   "enable": true,
                   "mime": "image/gif",
+                  "lossy": false,
                   "animateable": true,
                   "chrome_supported": true,
                   "w2x_supported": true,
@@ -183,6 +186,7 @@
               "targa": {
                   "enable": true,
                   "mime": "image/x-targa",
+                  "lossy": true,
                   "animateable": true,
                   "chrome_supported": true,
                   "w2x_supported": true,
@@ -194,6 +198,7 @@
               "bpg": {
                   "enable": true,
                   "mime": "image/x-bpg",
+                  "lossy": false,
                   "animateable": true,
                   "chrome_supported": false,
                   "w2x_supported": false,
@@ -205,17 +210,19 @@
               "webp": {
                   "enable": true,
                   "mime": "image/x-webp",
+                  "lossy": false,
                   "animateable": true,
                   "chrome_supported": true,
                   "w2x_supported": false,
                   "extentions": [
                       "webp"
                   ],
-                  "output_option": ""
+                  "output_option": "-lossless"
               },
               "mp4": {
                   "enable": true,
                   "mime": "video/mp4",
+                  "lossy": true,
                   "animateable": true,
                   "chrome_supported": true,
                   "w2x_supported": false,
@@ -227,10 +234,11 @@
           },
           "output": {
               "path": "",
-              "file_format": "png"
+              "file_format": "webp"
           },
-          "parallel": 1,
-          "log": []
+          "parallel": "10",
+          "log": [],
+          "scale_down_ratio": 1
       }
     if(DEBUG) console.log(setting)
       let savedata = require(setting_path)
@@ -239,9 +247,10 @@
       
     if(DEBUG) console.log(setting)
   
-    if(DEBUG) console.log(tmp)
+    if(DEBUG) console.log(temp)
     if(DEBUG) console.log(i18n)
     if(DEBUG) console.log(cwd)
+
 
     $(document).on('dragover drop',function(e) {
       e.preventDefault()
@@ -257,13 +266,15 @@
       /* *************************************************************** */
 
       // 終了時setting.jsonを書き換える。
-      $(window).on("load",function(){
+      $(document).on("close",function(){
         let timestamp = new Date()
         setting.log.push([timestamp.toISOString()])
         save()
       })
 
       function save(){
+        let timestamp = new Date()
+        if(DEBUG) console.log("Setting changed and saved at " + timestamp.toISOString())
         componentHandler.upgradeDom('input,textarea,select');
         fs.writeFile(setting_path, JSON.stringify(setting,null,4))
       }
@@ -278,8 +289,9 @@
       // 関数type()……File APIを読み取りファイルタイプを出力
       //               returntypeはtextかisReadable
       function type(file,returntype){ 
+        if(DEBUG) console.log(file)
         let answer = false
-        if(fs.existsSync(file.path) && fs.statSync(file.path).isDirectory()){
+        if(fs.statSync(file.path).isDirectory()){
           switch(returntype){
             case 'text': answer = "directory"; break;
             case 'isReadable' : answer = false; break;
@@ -287,21 +299,25 @@
             case 'isEnable' : answer = true; break;
           }
         } else {
-          if(DEBUG) console.log(file.type)
+          // if(DEBUG) console.log(file.type)
           switch(returntype){
             case 'text': 
-              if(file.type != "") answer = file.type
+              if( file.type != undefined && file.type != "" ) answer = file.type
               else if(type(file,"isReadable")) answer = setting.file_formats[type(file,"isReadable")].mime
               else answer = false
               break
             case 'isReadable' : 
               for( var key in setting.file_formats ){
-                if(DEBUG) console.log(key + ",mime:" + setting.file_formats[key].mime)
+                // if(DEBUG) console.log(key + ",mime:" + setting.file_formats[key].mime)
                 if(setting.file_formats[key].mime == file.type ){
                   answer = key
                 } else {
                   for(let i = 0; i < setting.file_formats[key].extentions.length; i++){
-                    if(file.before.x == setting.file_formats[key].extentions[i]){ answer = key; break; }
+                    // if(DEBUG) console.log("." + setting.file_formats[key].extentions[i])
+                    if(file.name.slice(setting.file_formats[key].extentions[i]) == setting.file_formats[key].extentions[i]){
+                      answer = key
+                    }
+                    if(!answer) break
                   }
                 }
               }
@@ -319,7 +335,7 @@
       }
 
       // 関数changed_files_list()……ファイルを入力/削除した時に実行し、ファイル一覧の変更をする
-      function changed_files_list(_image){
+      function changed_files_list(){
         let files_chosen_html = ""
             files_running_html = ""
             delete_html_before = "<a href='javascript:void(0)' class='mdl-button mdl-js-button mdl-button--icon delete-chosen-file' name='delete_chosen_file_"
@@ -334,7 +350,7 @@
               isReadable = type(_this,'isReadable')
               
           files_chosen_html += `<p class="changeable p-0 m-0">${numbering} <img src="${_this.path}" style="height: 2em" />${delete_html_before}${i}${delete_html_after}${_this.path}(${mimetype}`
-          if(DEBUG) console.table()
+          if(DEBUG) console.log(isReadable)
           if(isReadable){
             if(DEBUG) console.log(_this.image.width+"x"+_this.image.height)
             files_chosen_html += "," + isReadable + "," + Number(_this.size) + "," + _this.image.width + "x" + _this.image.height + ")" + "</p>"
@@ -372,21 +388,6 @@
 
       }
 
-      // 実行ボタン監視
-      $("button[name='do']").on('click',function(e){
-        e.preventDefault()
-        for(let i = 0; i < files_chosen.length; i++ ){
-          if(type(files_chosen[i],"isEnable")){
-            w2x_run(files_chosen[i])
-          } else if(type(files_chosen[i],'isDirectory')) {
-            w2x_directory(files_chosen[i])
-          }
-        }
-        files_chosen = []
-        changed_files_list()
-      })
-      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; changed_files_list() })
-
       // DD時の動作
       $(document).on('drop',function(e){
         e.preventDefault();
@@ -401,6 +402,7 @@
           e.originalEvent.dataTransfer.files[i].image = image
           if(DEBUG) console.log(image)
           e.originalEvent.dataTransfer.files[i].before = {}
+          e.originalEvent.dataTransfer.files[i].before.image = image
           e.originalEvent.dataTransfer.files[i].before.d = _this.path.substr(0,3)
           e.originalEvent.dataTransfer.files[i].before.p = _this.path.substr(3, _this.path.length - 3 - _this.name.length)
           if(isDirectory){
@@ -432,33 +434,153 @@
 
 
       
+      function rmdirForceSync(path) {
+        try {
+          fs.statSync(path);
+        } catch(e) {
+          if(e.code === 'ENOENT') return false
+        }
+        log = execSync(`rmdir /s /q "${path}"`)
+        if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(log)))
+      }
+      rmdirForceSync(temp)
+      fs.mkdirSync(temp)
       /* *************************************************************** */
       /*                                                                 */
       /* コマンドの実行                                                  */
       /*                                                                 */
       /* *************************************************************** */
+      // 実行ボタン監視
+      $("button[name='do']").on('click',function(e){
+        e.preventDefault()
+        for(let i = 0; i < files_chosen.length; i++ ){
+          if(files_chosen[i].type.indexOf("video") != -1 && type(files_chosen[i],"isEnable")){
+            mov_register(files_chosen[i])
+          } else if(setting.file_formats[type(files_chosen[i],"isReadable")].animateable){
+            anm_register(files_chosen[i])
+          } else if(type(files_chosen[i],"isEnable")){
+            img_register(files_chosen[i])
+          } else if(type(files_chosen[i],'isDirectory')) {
+            dir_register(files_chosen[i].path,files_chosen[i].before)
+          }
+        }
+        files_chosen = []
+        for(let i = 0; i < setting.parallel; i++){
+          // setTimeout(converter,i*128)
+        }
+        changed_files_list()
+        // rmdirForceSync(temp)
+      })
+      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; changed_files_list() })
 
-      //id発行
+      function converter(){
+        return false
+      }
+
+
+      function anm_register(file){
+        if(DEBUG) console.log(file.name + " register as animation")
+        let log,
+            logstr
+        log = execSync(`magick identify "${file.path}"`)
+        logstr = String.fromCharCode.apply(null, new Uint8Array(log))
+        if(DEBUG) console.log( logstr.length)
+        if(DEBUG) console.log( logstr.indexOf("\n"))
+        if( logstr.length - 1 == logstr.indexOf("\n") ){
+          img_register(file)
+        } else {
+          mov_register(file)
+        }
+      }
+
+      // 動画登録
+      function mov_register(file){
+        if(DEBUG) console.log(file.name + " register as movie")
+        let dist = `${temp}\\anm\\${file.before.n}`
+        let log,
+            logstr
+        fs.mkdirSync(`${temp}\\anm`)
+        fs.mkdirSync(dist)
+        execSync(`ffmpeg -i "${file.path}" -f image2 -vcodec ${tmp_ext} "${dist}\\%09d.${tmp_ext}"`)
+        log = execSync(`magick identify "${dist}\\000000001.${tmp_ext}"`)
+        logstr = String.fromCharCode.apply(null, new Uint8Array(log))
+        let str_x = logstr.split(" ")[3].split("x")
+        let str_w = str_x[0]
+        let str_h = str_x[1].split("+")[0]
+        if(DEBUG) console.log([str_x,str_w,str_h])
+        file.before.image.width = str_w
+        file.before.image.height = str_h
+        dir_register(dist,file.before)
+      }
+      
+      function dir_register(path,before){
+        if(DEBUG) console.log(path + " register as directory")
+        fs.readdirSync(path).forEach(function(name,index){
+          if(DEBUG) console.log(name)
+          let image= new Image
+              zfile = {}
+          zfile.before = before
+          zfile.path = `${path}\\${name}`
+          if(DEBUG) console.log(zfile.path)
+          image.src=zfile.path
+          if(DEBUG) console.log(zfile.image)
+          zfile.image = image
+          zfile.image.width = before.image.width
+          zfile.image.height = before.image.height
+          zfile.name = name
+          if(DEBUG) console.log(image)
+          zfile.type = `image/${tmp_ext}`
+          if(DEBUG) console.log(zfile)
+          setTimeout(img_register(zfile),1000)
+        })
+      }
+
+      // 画像登録(最終)
+      function img_register(zfile){
+        let timestamp = new Date()
+        if(DEBUG) console.log("started at " + timestamp.toISOString())
+        let id = get_hash(timestamp.toISOString())
+        files_running[id] = {}
+        files_running[id]["file"] = zfile
+        files_running[id]["file"]["file_format"] = type(zfile,'isReadable')
+        files_running[id]["order"] = setting
+        files_running[id]["process"] = {}
+        files_running[id].process.thisis_thtime = 0
+        files_running[id].process.scale_ratio = scale_ratio_register(id)
+        if(DEBUG) console.log(files_running[id])
+      }
+
+      // scale_ratio確定
+      function scale_ratio_register(id){
+        if(files_running[id].order.scale_ratio.auto){
+          if(DEBUG) console.log(files_running[id].file.image.width)
+          let ratio_h = 0
+              ratio_w = 0
+          if(files_running[id].order.scale_ratio.min_width > 0){
+            ratio_w = files_running[id].order.scale_ratio.min_width / files_running[id].file.before.image.width / files_running[id].order.scale_down_ratio
+          } else {
+            ratio_w = 1
+          }
+          if(files_running[id].order.scale_ratio.min_height > 0){
+            ratio_h = files_running[id].order.scale_ratio.min_height / files_running[id].file.before.image.height / files_running[id].order.scale_down_ratio
+          } else {
+            ratio_h = 1
+          }
+          if(DEBUG) console.log("w:"+ ratio_w)
+          if(DEBUG) console.log("h:"+ ratio_h)
+          if( ratio_w < ratio_h ) return ratio_h
+          if( ratio_w > ratio_h ) return ratio_w
+        } else {
+          return files_running[id].order.scale_ratio.scale_ratio / files_running[id].order.scale_down_ratio
+        }
+      }
+
+      // id発行
       function get_hash(timestamp) {
         if(DEBUG) console.log(crypto)
         return ncrypto.createHash('sha1').update(timestamp).digest("hex")
       }
 
-      // waifu2x実行
-      function w2x_run(file,_image){
-        let timestamp = new Date()
-        if(DEBUG) console.log("started at " + timestamp.toISOString())
-        let id = get_hash(timestamp.toISOString())
-        files_running[id] = {}
-        files_running[id]["file"] = file
-        files_running[id]["file"]["file_format"] = type(file,'isReadable')
-        files_running[id]["order"] = setting
-        changed_files_list(_image)
-      }
-
-
-
-      
       /* *************************************************************** */
       /*                                                                 */
       /* 設定フォームの生成・検知                                        */
@@ -732,6 +854,15 @@
         }
         setting.parallel = $(this).val()
       })
+
+      $("#scale_down_ratio").val(setting.scale_down_ratio).trigger("change")
+      $("#scale_down_ratio").on("change",function(){
+        if($(this).val() > 1){
+          $(this).val(1).trigger("change")
+          return false
+        }
+        setting.parallel = $(this).val()
+      })
       /////////////////////////////////////////////////////////////////
       // fileformats                                                 //
       // 入力ファイルフォーマット                                    //
@@ -908,6 +1039,19 @@
                 <input class="mdl-textfield__input" type="text" pattern="[0-9]*([0-9]+)?" id="parallel">
                 <label class="mdl-textfield__label" for="parallel">%i18n:text.setting.process.number%</label>
                 <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror2%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mdl-card mdl-shadow--2dp m-3 flex_1">
+            <div class="mdl-card__title">
+              <h2 class="mdl-card__title-text">%i18n:text.setting.scaledown.title%</h2>
+            </div>
+            <div class="mdl-card__supporting-text">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:100%">
+                <input class="mdl-textfield__input" type="text" pattern="[0-9]*(\.[0-9]+)?" id="scale_down_ratio">
+                <label class="mdl-textfield__label" for="scale_down_ratio">%i18n:text.setting.scaledown.number%</label>
+                <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror%</span>
               </div>
             </div>
           </div>
