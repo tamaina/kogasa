@@ -475,8 +475,11 @@
         } catch(e) {
           if(e.code === 'ENOENT') return false
         }
-        log = execSync(`rmdir /s /q "${path}"`)
-        if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(log)))
+        try{
+          log = execSync(`rmdir /s /q "${path}"`)
+          if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(log)))
+
+        }catch(e){}
       }
       rmdirForceSync(temp)
       try{
@@ -611,7 +614,8 @@
           delete files_running[id]
           break;
         }
-        if(!PAUSE) setTimeout(changed_files_list(),500)
+        changed_files_list()
+        if(!PAUSE && files_reserved != {}) setTimeout(converter(),500)
       }
 
       // 動画・アニメーション登録
@@ -646,9 +650,11 @@
       function dir_register(path,zbefore){
         let zbefore_path = zbefore.p
         let zbefore_name = zbefore.n
+        if(DEBUG) console.log(zbefore_path)
+        if(DEBUG) console.log(zbefore_name)
         if(DEBUG) console.log(path + " register as directory")
-        fs.readdirSync(path).forEach(function(name,index){
-          if(DEBUG) console.log(name)
+        fs.readdirSync(path).forEach(function(myname,index){
+          if(DEBUG) console.log(myname)
           let image= new Image
           let zfile = {}
           zfile.before = zbefore
@@ -657,9 +663,9 @@
           try{
             fs.mkdirSync(`${zfile.before.d}${zfile.before.p}`)
           }catch(e){}
-          zfile.before.n = name.slice(0,name.lastIndexOf("."))
-          zfile.before.x = name.substr(name.lastIndexOf("."))
-          zfile.path = `${path}\\${name}`
+          zfile.before.n = myname.slice(0,myname.lastIndexOf("."))
+          zfile.before.x = myname.substr(myname.lastIndexOf("."))
+          zfile.path = `${path}\\${myname}`
           if(DEBUG) console.log(zfile.path)
           image.src=zfile.path
           if(DEBUG) console.log(zfile.image)
@@ -676,6 +682,7 @@
 
       // 画像登録(最終)
       function img_register(zfile){
+        if(DEBUG) console.log(zfile)
         let timestamp = new Date()
         if(DEBUG) console.log("started at " + timestamp.toISOString())
         let id = get_hash(timestamp.toISOString())
