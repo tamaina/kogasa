@@ -62,13 +62,16 @@
       },
       "scaledown": {
         "title": "Scale down before w2x",
-        "number": "Number(0~1)"
+        "number": "Number(0~1)",
+        "unsharp": "unsharp",
+        "typeerror": "Wrong value"
       }
     },
     "files": {
       "chosen": "Chosen:",
+      "reserved": "Reserved:",
       "running": "Running:",
-      "done": "Done:",
+      "finished": "Done:",
       "nofile": "Files and folders may display here"
     },
     "error": {

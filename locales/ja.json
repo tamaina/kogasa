@@ -62,13 +62,16 @@
       },
       "scaledown": {
         "title": "waifu2x処理前に縮小",
-        "number": "割合(0より大きく1以下)"
+        "number": "割合(0より大きく1以下)",
+        "unsharp": "縮小時のunsharp",
+        "typeerror": "数字と+,xで表現してください"
       }
     },
     "files": {
       "chosen": "選択済み",
+      "reserved": "待機中",
       "running": "処理中",
-      "done": "完成",
+      "finished": "処理終了",
       "nofile": "ここにファイルやフォルダーの一覧が表示されます"
     },
     "error": {

@@ -41,7 +41,7 @@
                         }
                     }
                 ],
-                "image_val": "art_y"
+                "image_val": "art"
             },
             {
                 "name": "upconv_7",
@@ -65,20 +65,20 @@
                         }
                     }
                 ],
-                "image_val": "photo"
+                "image_val": "art"
             }
         ],
         "vendor": "vgg_7"
     },
     "scale_ratio": {
-        "auto": true,
+        "auto": false,
         "scale_ratio": "2",
         "max_width": 1920,
         "max_height": 1080,
         "min_width": "200",
         "min_height": "0"
     },
-    "noise_level": "0",
+    "noise_level": "2",
     "auto_scale": true,
     "file_formats": {
         "png": {
@@ -103,7 +103,8 @@
             "extentions": [
                 "jpeg",
                 "jpg"
-            ]
+            ],
+            "output_option": ""
         },
         "tiff": {
             "enable": true,
@@ -191,14 +192,15 @@
         }
     },
     "output": {
-        "path": "",
-        "file_format": "webp"
+        "path": "G:\\kogasa\\images\\",
+        "file_format": "png"
     },
-    "parallel": "10",
+    "parallel": "2",
     "log": [
         [
             "2017-07-02T14:09:59.910Z"
         ]
     ],
-    "scale_down_ratio": 1
+    "scale_down_ratio": 1,
+    "scale_down_unsharp": "12x6+0.5+0"
 }

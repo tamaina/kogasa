@@ -8,7 +8,7 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path')
 const url = require('url')
 
-const DEBUG = false
+const DEBUG = true
 const fs = require('fs')
 const crypto = require('crypto')
 
@@ -21,11 +21,12 @@ function createWindow () {
   // （今回はmain.jsと同じディレクトリのindex.html）
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:'
+    protocol: 'file:',
+    slashes: true
   }));
   
   // デベロッパーツールの起動
-  // if(DEBUG) mainWindow.webContents.openDevTools();
+  if(DEBUG) mainWindow.webContents.openDevTools();
 
   // メインウィンドウが閉じられたときの処理
   mainWindow.on('closed', function () {

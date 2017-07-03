@@ -31,14 +31,17 @@
           i18n["here"] = require('./locales/' + window.navigator.language + '.json')
           i18n.ja = require('./locales/ja.json')
           display_files_chosen_selector = "#files_chosen"
+          display_files_reserved_selector = "#files_reserved"
           display_files_running_selector = "#files_running"
-          display_files_finished_selector = ""
-          w2xbin = "w2xbin/"
+          display_files_finished_selector = "#files_finished"
+          w2xbin = "w2xbin\\"
           temp = "" + tmp.tmpdir + "\\kogasa"
           tmp_ext = "png"
       let files_chosen = []
+          files_reserved = {}
           files_running = {}
           files_finished = {}
+          PAUSE = false
       // settingの素(settingが無い場合の初期値決定、およびサジェスト用)
       let setting = {
           "waifu2x": {
@@ -250,6 +253,7 @@
     if(DEBUG) console.log(temp)
     if(DEBUG) console.log(i18n)
     if(DEBUG) console.log(cwd)
+    if(DEBUG) console.log((String.fromCharCode.apply(null, new Uint8Array(execSync("cd")))))
 
 
     $(document).on('dragover drop',function(e) {
@@ -342,7 +346,9 @@
       // 関数changed_files_list()……ファイルを入力/削除した時に実行し、ファイル一覧の変更をする
       function changed_files_list(){
         let files_chosen_html = ""
+            files_reserved_html = ""
             files_running_html = ""
+            files_finished_html = ""
             delete_html_before = "<a href='javascript:void(0)' class='mdl-button mdl-js-button mdl-button--icon delete-chosen-file' name='delete_chosen_file_"
             delete_html_after = "'>&times;</a>"
 
@@ -366,8 +372,20 @@
         if(files_chosen_html.length < 2) files_chosen_html = "%i18n:text.files.nofile%"
         $(display_files_chosen_selector).html(files_chosen_html.replace(/%i18n:(.+?)%/g,replace_i18n))
         
-        if(DEBUG) console.table(files_running)
+        if(DEBUG) console.table(files_reserved)
 
+        // 待機中ファイル一覧の出力
+        if(files_reserved){
+        for(let key in files_reserved){
+          let _this = files_reserved[key].file
+              mimetype = type(_this,'text')
+              isReadable = type(_this,'isReadable')
+          if(DEBUG) console.table()
+          files_reserved_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + _this.image.width + "x" + _this.image.height + ")" + "</p>"
+        }
+        if(files_reserved_html.length < 2) files_reserved_html = "%i18n:text.files.nofile%"
+        $(display_files_reserved_selector).html(files_reserved_html.replace(/%i18n:(.+?)%/g,replace_i18n))
+        }
         // 処理中ファイル一覧の出力
         if(files_running){
         for(let key in files_running){
@@ -379,6 +397,18 @@
         }
         if(files_running_html.length < 2) files_running_html = "%i18n:text.files.nofile%"
         $(display_files_running_selector).html(files_running_html.replace(/%i18n:(.+?)%/g,replace_i18n))
+        }
+        // 終了ファイル一覧の出力
+        if(files_finished){
+        for(let key in files_finished){
+          let _this = files_finished[key].file
+              mimetype = type(_this,'text')
+              isReadable = type(_this,'isReadable')
+          if(DEBUG) console.table()
+          files_finished_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + _this.image.width + "x" + _this.image.height + ")" + "</p>"
+        }
+        if(files_finished_html.length < 2) files_finished_html = "%i18n:text.files.nofile%"
+        $(display_files_finished_selector).html(files_finished_html.replace(/%i18n:(.+?)%/g,replace_i18n))
         }
         $(".delete-chosen-file").off('click')
         $(".delete-chosen-file").on("click",function(){
@@ -449,7 +479,9 @@
         if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(log)))
       }
       rmdirForceSync(temp)
-      fs.mkdirSync(temp)
+      try{
+        fs.mkdirSync(temp)
+      }catch(e){}
       /* *************************************************************** */
       /*                                                                 */
       /* コマンドの実行                                                  */
@@ -458,6 +490,8 @@
       // 実行ボタン監視
       $("button[name='do']").on('click',function(e){
         e.preventDefault()
+        if(DEBUG) console.log(files_chosen)
+        if(files_chosen == []) return false
         for(let i = 0; i < files_chosen.length; i++ ){
           if(setting.file_formats[type(files_chosen[i],"isReadable")].animateable && type(files_chosen[i],"isEnable")){
             mov_register(files_chosen[i])
@@ -468,16 +502,116 @@
           }
         }
         files_chosen = []
-        for(let i = 0; i < setting.parallel; i++){
-          // setTimeout(converter,i*128)
+        if(files_reserved != {}){
+          for(let i = 0; i < setting.parallel; i++){
+            setTimeout(converter,i*128)
+          }
         }
         changed_files_list()
         
       })
-      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; rmdirForceSync(temp); fs.mkdirSync(temp); changed_files_list() })
+      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; rmdirForceSync(temp);
+        try{
+          fs.mkdirSync(temp)
+        }catch(e){}
+        changed_files_list() })
+      $("button[name='PAUSE']").on('click',function(e){ e.preventDefault(); 
+        if(PAUSE){
+          PAUSE = false
+          if(files_reserved != {}){
+            for(let i = 0; i < setting.parallel; i++){
+              setTimeout(converter,i*128)
+            }
+          }
+        } else {
+          PAUSE = true
+        }
+    
+      })
 
       function converter(){
-        return false
+        for(let id in files_reserved){
+          files_running[id] = files_reserved[id]
+          delete files_reserved[id]
+          files_running[id].process.log = {}
+          let timestamp = new Date()
+          let command = ""
+          files_running[id].process.tmpdpn = `${temp}\\${id}`
+          files_running[id].process.tmpdpnx = `${files_running[id].process.tmpdpn}.${tmp_ext}`
+          files_running[id].process.log[timestamp.toISOString()] = "CONVERT STARTED"
+          files_running[id].process.t = 0
+
+          setTimeout(changed_files_list(),500)
+          do{
+            if(files_running[id].process.t == 0){
+              if(files_running[id].order.scale_down_ratio != 1){
+                timestamp = new Date()
+                command = `magick convert -resize ${files_running[id].order.scale_down_ratio * 100}% -unsharp ${files_running[id].order.scale_down_unsharp} -verbose "${files_running[id].file.path}" "${files_running[id].process.tmpdpnx}" `
+                files_running[id].process.log[timestamp.toISOString()] = execSync(command)
+                if(DEBUG) console.log(command)
+                if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(files_running[id].process.log[timestamp.toISOString()])))
+            } else {
+                timestamp = new Date()
+                command = `magick convert -verbose "${files_running[id].file.path}" "${files_running[id].process.tmpdpn}.${tmp_ext}"`
+                files_running[id].process.log[timestamp.toISOString()] = execSync(command)
+                if(DEBUG) console.log(command)
+                if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(files_running[id].process.log[timestamp.toISOString()])))
+              }
+              if(files_running[id].order.noise_level > 0 && files_running[id].order.file_formats[files_running[id].file.file_format].lossy) files_running[id].process.noise = true
+              else if(files_running[id].order.noise_level > 0 && !files_running[id].order.auto_scale) files_running[id].process.noise = true
+              else files_running[id].process.noise = false
+            }
+
+            function search_vendor(id){
+              for(let x = 0; x < files_running[id].order.model.vendors.length; x++){
+                if( files_running[id].order.model.vendor == files_running[id].order.model.vendors[x].name ) return x
+              }
+            }
+            let x = search_vendor(id)
+
+            if(files_running[id].process.noise){
+              timestamp = new Date()
+              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m noise ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} -n ${files_running[id].order.noise_level} --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[x].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
+              files_running[id].process.log[timestamp.toISOString()] = execSync(command)
+              files_running[id].process.t++
+              if(DEBUG) console.log(command)
+              if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(files_running[id].process.log[timestamp.toISOString()])))
+            }
+            if( files_running[id].process.scale_ratio > 1 ){
+              timestamp = new Date()
+              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m scale ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} -s 2 --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[x].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
+              files_running[id].process.log[timestamp.toISOString()] = execSync(command)
+              files_running[id].process.t++
+              if(DEBUG) console.log(command)
+              if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(files_running[id].process.log[timestamp.toISOString()])))
+            }
+
+            files_running[id].process.scale_ratio = files_running[id].process.scale_ratio / 2
+            files_running[id].process.noise = false
+          } while( files_running[id].process.scale_ratio > 1 )
+
+          files_running[id].process.resize_set = ""
+          if(files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "width") files_running[id].process.resize_set = `-resize ${files_running[id].order.scale_ratio.min_width}x -unsharp ${files_running[id].order.scale_down_unsharp} `
+          if(files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "height") files_running[id].process.resize_set = `-resize x${files_running[id].order.scale_ratio.min_height} -unsharp ${files_running[id].order.scale_down_unsharp} `
+          if(!files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "width") files_running[id].process.resize_set = `-resize ${files_running[id].file.before.image.width * files_running[id].order.scale_ratio.scale_ratio / files_running[id].order.scale_down_ratio}x -unsharp ${files_running[id].order.scale_down_unsharp} `
+          if(!files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "height") files_running[id].process.resize_set = `-resize x${files_running[id].file.before.image.height * files_running[id].order.scale_ratio.scale_ratio / files_running[id].order.scale_down_ratio} -unsharp ${files_running[id].order.scale_down_unsharp} `
+
+          if(files_running[id].order.output.path == "") files_running[id].order.output.path = `${files_running[id].file.before.d}${files_running[id].file.before.p}`
+          files_running[id].process.outname = `waifued_${files_running[id].file.before.n}`
+          try{
+            fs.mkdirSync(files_running[id].order.output.path)
+          }catch(e){}
+          timestamp = new Date()
+          command = `magick convert ${files_running[id].process.resize_set} ${files_running[id].order.file_formats[files_running[id].order.output.file_format].output_option.replace("\n"," ")} -verbose "${files_running[id].process.tmpdpnx}" "${files_running[id].order.output.path}${files_running[id].process.outname}.${files_running[id].order.output.file_format}"`
+          files_running[id].process.log[timestamp.toISOString()] = execSync(command)
+          if(DEBUG) console.log(command)
+          if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(files_running[id].process.log[timestamp.toISOString()])))
+          fs.unlinkSync(files_running[id].process.tmpdpnx)
+          files_finished[id] = files_running[id]
+          delete files_running[id]
+          break;
+        }
+        if(!PAUSE) setTimeout(changed_files_list(),500)
       }
 
       // 動画・アニメーション登録
@@ -486,8 +620,12 @@
         let dist = `${temp}\\anm\\${file.before.n}`
         let log,
             logstr
-        fs.mkdirSync(`${temp}\\anm`)
-        fs.mkdirSync(dist)
+        try{
+          fs.mkdirSync(`${temp}\\anm`)
+        }catch(e){}
+        try{
+          fs.mkdirSync(dist)
+        }catch(e){}
         execSync(`ffmpeg -i "${file.path}" -f image2 -vcodec ${tmp_ext} "${dist}\\%09d.${tmp_ext}"`)
         if(fs.readdirSync(dist).length == 1){
           rmdirForceSync(dist)
@@ -512,6 +650,13 @@
           let image= new Image
               zfile = {}
           zfile.before = before
+          zfile.before.d = before.d
+          zfile.before.p = `${before.p}${before.n}_waifued\\`
+          try{
+            fs.mkdirSync(`${zfile.before.d}${zfile.before.p}`)
+          }catch(e){}
+          zfile.before.n = name.slice(0,name.lastIndexOf("."))
+          zfile.before.x = name.substr(name.lastIndexOf("."))
           zfile.path = `${path}\\${name}`
           if(DEBUG) console.log(zfile.path)
           image.src=zfile.path
@@ -532,29 +677,29 @@
         let timestamp = new Date()
         if(DEBUG) console.log("started at " + timestamp.toISOString())
         let id = get_hash(timestamp.toISOString())
-        files_running[id] = {}
-        files_running[id]["file"] = zfile
-        files_running[id]["file"]["file_format"] = type(zfile,'isReadable')
-        files_running[id]["order"] = setting
-        files_running[id]["process"] = {}
-        files_running[id].process.thisis_thtime = 0
-        files_running[id].process.scale_ratio = scale_ratio_register(id)
-        if(DEBUG) console.log(files_running[id])
+        files_reserved[id] = {}
+        files_reserved[id]["file"] = zfile
+        files_reserved[id]["file"]["file_format"] = type(zfile,'isReadable')
+        files_reserved[id]["order"] = setting
+        files_reserved[id]["process"] = {}
+        files_reserved[id].process.scale_ratio = scale_ratio_register(id)
+        files_reserved[id].process.scale_whichis = scale_whichis(id)
+        if(DEBUG) console.log(files_reserved[id])
       }
 
       // scale_ratio確定
       function scale_ratio_register(id){
-        if(files_running[id].order.scale_ratio.auto){
-          if(DEBUG) console.log(files_running[id].file.image.width)
+        if(files_reserved[id].order.scale_ratio.auto){
+          if(DEBUG) console.log(files_reserved[id].file.image.width)
           let ratio_h = 0
               ratio_w = 0
-          if(files_running[id].order.scale_ratio.min_width > 0){
-            ratio_w = files_running[id].order.scale_ratio.min_width / files_running[id].file.before.image.width / files_running[id].order.scale_down_ratio
+          if(files_reserved[id].order.scale_ratio.min_width > 0){
+            ratio_w = files_reserved[id].order.scale_ratio.min_width / files_reserved[id].file.before.image.width / files_reserved[id].order.scale_down_ratio
           } else {
             ratio_w = 1
           }
-          if(files_running[id].order.scale_ratio.min_height > 0){
-            ratio_h = files_running[id].order.scale_ratio.min_height / files_running[id].file.before.image.height / files_running[id].order.scale_down_ratio
+          if(files_reserved[id].order.scale_ratio.min_height > 0){
+            ratio_h = files_reserved[id].order.scale_ratio.min_height / files_reserved[id].file.before.image.height / files_reserved[id].order.scale_down_ratio
           } else {
             ratio_h = 1
           }
@@ -563,10 +708,34 @@
           if( ratio_w < ratio_h ) return ratio_h
           if( ratio_w > ratio_h ) return ratio_w
         } else {
-          return files_running[id].order.scale_ratio.scale_ratio / files_running[id].order.scale_down_ratio
+          return files_reserved[id].order.scale_ratio.scale_ratio / files_reserved[id].order.scale_down_ratio
         }
       }
 
+      function scale_whichis(id){
+        if(DEBUG) console.log(files_reserved[id].file.image.width)
+        let ratio_h = 0
+            ratio_w = 0
+        if(files_reserved[id].order.scale_ratio.auto){
+          if(files_reserved[id].order.scale_ratio.min_width > 0){
+            ratio_w = files_reserved[id].order.scale_ratio.min_width / files_reserved[id].file.before.image.width
+          } else {
+            ratio_w = 0
+          }
+          if(files_reserved[id].order.scale_ratio.min_height > 0){
+            ratio_h = files_reserved[id].order.scale_ratio.min_height / files_reserved[id].file.before.image.height
+          } else {
+            ratio_h = 0
+          }
+        } else {
+          ratio_w = files_reserved[id].file.before.image.width * files_reserved[id].order.scale_ratio.scale_ratio / files_reserved[id].order.scale_down_ratio
+          ratio_w = files_reserved[id].file.before.image.width * files_reserved[id].order.scale_ratio.scale_ratio / files_reserved[id].order.scale_down_ratio
+        }
+        if(DEBUG) console.log("w:"+ ratio_w)
+        if(DEBUG) console.log("h:"+ ratio_h)
+        if( ratio_w < ratio_h ) return "height"
+        if( ratio_w > ratio_h ) return "width"
+      }
       // id発行
       function get_hash(timestamp) {
         if(DEBUG) console.log(crypto)
@@ -845,15 +1014,18 @@
           return false
         }
         setting.parallel = $(this).val()
+        save()
       })
 
       $("#scale_down_ratio").val(setting.scale_down_ratio).trigger("change")
       $("#scale_down_ratio").on("change",function(){
-        if($(this).val() > 1){
-          $(this).val(1).trigger("change")
-          return false
-        }
-        setting.parallel = $(this).val()
+        setting.scale_down_ratio = $(this).val()
+        save()
+      })
+      $("#scale_down_unsharp").val(setting.scale_down_unsharp).trigger("change")
+      $("#scale_down_unsharp").on("change",function(){
+        setting.scale_down_unsharp = $(this).val()
+        save()
       })
       /////////////////////////////////////////////////////////////////
       // fileformats                                                 //
@@ -908,7 +1080,6 @@
         save()
       })
 
-      $("#output_path").val(setting.output.path).trigger("change")
       $("#output_path").on("change",function(){
         setting.output.path = $(this).val()
         save()
@@ -1045,6 +1216,11 @@
                 <label class="mdl-textfield__label" for="scale_down_ratio">%i18n:text.setting.scaledown.number%</label>
                 <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror%</span>
               </div>
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:100%">
+                <input class="mdl-textfield__input" type="text" pattern="([0-9]+[x]+[0-9]+(\+[0-9]+(\.[0-9]+)?)?(\+[0-9]+(\.[0-9]+)?)?)?" id="scale_down_unsharp">
+                <label class="mdl-textfield__label" for="scale_down_unsharp">%i18n:text.setting.scaledown.unsharp%</label>
+                <span class="mdl-textfield__error">%i18n:text.setting.scaledown.typeerror%</span>
+              </div>
             </div>
           </div>
 
@@ -1113,8 +1289,14 @@
         </div>
 
       <div class="container">
+        <h3>%i18n:text.files.reserved%</h3>
+        <div id="files_reserved" style="padding-bottom: 1em"></div>
+
         <h3>%i18n:text.files.running%</h3>
         <div id="files_running" style="padding-bottom: 1em"></div>
+
+        <h3>%i18n:text.files.finished%</h3>
+        <div id="files_finished" style="padding-bottom: 1em"></div>
 
         <p class="pb-0">
           %i18n:i18ntest.We_are_using_node_version%<br>
