@@ -8,7 +8,7 @@
                 "more_option": "-p cpu"
             }
         },
-        "use": "waifu2x-caffe-cui"
+        "use": "waifu2x-converter-cpp"
     },
     "model": {
         "vendors": [
@@ -68,7 +68,7 @@
                 "image_val": "art"
             }
         ],
-        "vendor": "vgg_7"
+        "vendor": "upconv_7"
     },
     "scale_ratio": {
         "auto": false,
