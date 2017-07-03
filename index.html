@@ -571,7 +571,7 @@
 
             if(files_running[id].process.noise){
               timestamp = new Date()
-              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m noise ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} -n ${files_running[id].order.noise_level} --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[x].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
+              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m noise ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --noise_level ${files_running[id].order.noise_level} --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[x].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
               files_running[id].process.log[timestamp.toISOString()] = execSync(command)
               files_running[id].process.t++
               if(DEBUG) console.log(command)
@@ -579,7 +579,7 @@
             }
             if( files_running[id].process.scale_ratio > 1 ){
               timestamp = new Date()
-              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m scale ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} -s 2 --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[x].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
+              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m scale ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --scale_ratio 2 --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[x].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
               files_running[id].process.log[timestamp.toISOString()] = execSync(command)
               files_running[id].process.t++
               if(DEBUG) console.log(command)
@@ -643,15 +643,17 @@
         dir_register(dist,file.before)
       }
       
-      function dir_register(path,before){
+      function dir_register(path,zbefore){
+        let zbefore_path = zbefore.p
+        let zbefore_name = zbefore.n
         if(DEBUG) console.log(path + " register as directory")
         fs.readdirSync(path).forEach(function(name,index){
           if(DEBUG) console.log(name)
           let image= new Image
-              zfile = {}
-          zfile.before = before
-          zfile.before.d = before.d
-          zfile.before.p = `${before.p}${before.n}_waifued\\`
+          let zfile = {}
+          zfile.before = zbefore
+          zfile.before.d = zbefore.d
+          zfile.before.p = `${zbefore_path}${zbefore_name}_waifued\\`
           try{
             fs.mkdirSync(`${zfile.before.d}${zfile.before.p}`)
           }catch(e){}
@@ -662,8 +664,8 @@
           image.src=zfile.path
           if(DEBUG) console.log(zfile.image)
           zfile.image = image
-          zfile.image.width = before.image.width
-          zfile.image.height = before.image.height
+          zfile.image.width = zbefore.image.width
+          zfile.image.height = zbefore.image.height
           zfile.name = name
           if(DEBUG) console.log(image)
           zfile.type = `image/${tmp_ext}`

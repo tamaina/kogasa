@@ -1,9 +1,8 @@
 # LICENSE
 
 - waifu2x本家( https://github.com/nagadomi/waifu2x/blob/master/LICENSE )
-- converter( https://github.com/tanakamura/waifu2x-converter-cpp/blob/master/LICENSE )
+- converter( https://github.com/DeadSix27/waifu2x-converter-cpp/blob/master/LICENSE )
 - caffe( https://github.com/lltcggie/waifu2x-caffe/blob/master/LICENSE )
-- qiitaの利用規約( http://qiita.com/terms#9 )
 - MITライセンス Copyright (c) 2017 tamaina
 各ライセンスの内容はリンク先をご確認ください。
 また、どのファイルがどのライセンスに対応しているかは以下に記します。

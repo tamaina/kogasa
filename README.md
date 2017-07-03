@@ -26,3 +26,5 @@ waifu2xバージョン情報
   - ver 1.1.8.3
 - converter-cpp
   - v4.0 Released by DeadSix27
+
+win10-64bit専用ですが、waifu2xのバイナリを入れ替えるのと、一部のコードを入れ替えれば、直ぐ他OS対応はできると思います。
