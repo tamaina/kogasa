@@ -2,7 +2,7 @@
 
 // アプリケーション作成用のモジュールを読み込み
 const electron = require('electron');
-const app = electron.app;
+const app= electron.app;
 const BrowserWindow = electron.BrowserWindow;
   
 const path = require('path')
@@ -16,6 +16,8 @@ let mainWindow;
 
 function createWindow () {
   mainWindow = new BrowserWindow();
+
+  mainWindow.setMenu(null)
   
   // メインウィンドウに表示するURLを指定します
   // （今回はmain.jsと同じディレクトリのindex.html）

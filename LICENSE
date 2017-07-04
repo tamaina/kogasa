@@ -39,13 +39,14 @@
 ### waifu2x本家( https://github.com/nagadomi/waifu2x/blob/master/LICENSE )
 
 - w2xbin/modelsフォルダの中の「拡張子.caffeのファイル以外の」すべて
+- imagesフォルダの中のすべて
 
 ****
 
 ### converter
   ( https://github.com/DeadSix27/waifu2x-converter-cpp/blob/master/LICENSE )
 
-- w2xbin/waifu2x-converter_x64.exe
+- w2xbin/waifu2x-converter-cpp.exe
 - w2xbin/w2xc.dll
 
 ****
