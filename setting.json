@@ -75,7 +75,7 @@
         "min_width": "200",
         "min_height": "0"
     },
-    "noise_level": "0",
+    "noise_level": "1",
     "auto_scale": true,
     "file_formats": {
         "png": {
@@ -199,5 +199,9 @@
         ]
     ],
     "scale_down_ratio": 1,
-    "scale_down_unsharp": "12x6+0.5+0"
+    "scale_down_unsharp": "12x6+0.5+0",
+    "temp": {
+        "path": "",
+        "ext": ""
+    }
 }

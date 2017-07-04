@@ -36,13 +36,13 @@
           display_files_running_selector = "#files_running"
           display_files_finished_selector = "#files_finished"
           w2xbin = "w2xbin\\"
-          temp = "" + tmp.tmpdir + "\\kogasa"
-          tmp_ext = "png"
       let files_chosen = []
           files_reserved = {}
           files_running = {}
           files_finished = {}
           PAUSE = false
+          temp = "" + tmp.tmpdir + "\\kogasa"
+          tmp_ext = "png"
       // settingの素(settingが無い場合の初期値決定、およびサジェスト用)
       let setting = {
         "waifu2x": {
@@ -245,8 +245,16 @@
             ]
         ],
         "scale_down_ratio": 1,
-        "scale_down_unsharp": "12x6+0.5+0"
+        "scale_down_unsharp": "12x6+0.5+0",
+        "temp": {
+            "path": "",
+            "ext": "" 
+        }
     }
+
+    if(setting.temp.path != "") temp = setting.temp.path
+    if(setting.temp.ext != "") tmp_ext = setting.temp.ext
+
     if(DEBUG) console.log(setting)
       let savedata = require(setting_path)
     if(DEBUG) console.log(savedata)
@@ -382,10 +390,8 @@
         if(files_reserved){
         for(let key in files_reserved){
           let _this = files_reserved[key].file
-              mimetype = type(_this,'text')
-              isReadable = type(_this,'isReadable')
           if(DEBUG) console.table()
-          files_reserved_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + _this.image.width + "x" + _this.image.height + ")" + "</p>"
+          files_reserved_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + _this.before.n + _this.before.x + ")" + "</p>"
         }
         if(files_reserved_html.length < 2) files_reserved_html = "%i18n:text.files.nofile%"
         $(display_files_reserved_selector).html(files_reserved_html.replace(/%i18n:(.+?)%/g,replace_i18n))
@@ -393,7 +399,7 @@
         // 処理中ファイル一覧の出力
         if(files_running){
         for(let key in files_running){
-          files_running_html += "<p class='changeable pb-0'>" + "id:" + key + "</p>"
+          files_running_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + files_running[key].file.before.n + files_running[key].file.before.x + "→" + files_running[key].process.dest + ")" + "</p>"
         }
         if(files_running_html.length < 2) files_running_html = "%i18n:text.files.nofile%"
         $(display_files_running_selector).html(files_running_html.replace(/%i18n:(.+?)%/g,replace_i18n))
@@ -401,11 +407,9 @@
         // 終了ファイル一覧の出力
         if(files_finished){
         for(let key in files_finished){
-          let _this = files_finished[key].file
-              mimetype = type(_this,'text')
-              isReadable = type(_this,'isReadable')
+          let _this = files_finished[key]
           if(DEBUG) console.table()
-          files_finished_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + _this.image.width + "x" + _this.image.height + ")" + "</p>"
+          files_finished_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + _this.file.before.n + _this.file.before.x + "→" + _this.process.dest + ")" + "</p>"
         }
         if(files_finished_html.length < 2) files_finished_html = "%i18n:text.files.nofile%"
         $(display_files_finished_selector).html(files_finished_html.replace(/%i18n:(.+?)%/g,replace_i18n))
@@ -556,6 +560,7 @@
             if(DEBUG) console.log("B")
             dest = `${files_running[id].order.output.path}${files_running[id].process.outname}.${files_running[id].order.output.file_format}`
           }
+          files_running[id].process.dest = dest
           setTimeout(changed_files_list(),500)
           do{
             if(files_running[id].process.t == 0){
