@@ -23,6 +23,7 @@
     const fs = require('fs')
           ncrypto = require('crypto')
           nextend = require('extend')
+          npath = require('path')
           tmp = require('tmp')
           execSync = require('child_process').execSync
     const DEBUG = true
@@ -44,205 +45,208 @@
           PAUSE = false
       // settingの素(settingが無い場合の初期値決定、およびサジェスト用)
       let setting = {
-          "waifu2x": {
-              "binarys": {
-                  "waifu2x-converter-cpp": {
-                      "more_option": ""
-                  },
-                  "waifu2x-caffe-cui": {
-                      "more_option": "-p cpu"
-                  }
-              },
-              "use": "waifu2x-caffe-cui"
-          },
-          "model": {
-              "vendors": [
-                  {
-                      "name": "vgg_7",
-                      "description": {
-                          "ja": "標準的な処理方法です。",
-                          "en": "Default"
-                      },
-                      "images": [
-                          {
-                              "name": "art",
-                              "description": {
-                                  "ja": "アニメや漫画の絵を変換するのに適しています。",
-                                  "en": "For paint as anime and manga."
-                              }
-                          },
-                          {
-                              "name": "art_y",
-                              "description": {
-                                  "ja": "アニメや漫画の絵を変換するのに適しています。画像の輝度Y成分のみ変換します。",
-                                  "en": "For paint as anime and manga. It converts only \"Y\" data."
-                              }
-                          },
-                          {
-                              "name": "photo",
-                              "description": {
-                                  "ja": "写真を変換するのに適しています。",
-                                  "en": "For photograph."
-                              }
-                          }
-                      ],
-                      "image_val": "art_y"
-                  },
-                  {
-                      "name": "upconv_7",
-                      "description": {
-                          "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用量が増えます。",
-                          "en": "Great but heavy"
-                      },
-                      "images": [
-                          {
-                              "name": "art",
-                              "description": {
-                                  "ja": "アニメや漫画の絵を変換するのに適しています。",
-                                  "en": "For paint as anime and manga."
-                              }
-                          },
-                          {
-                              "name": "photo",
-                              "description": {
-                                  "ja": "写真を変換するのに適しています。",
-                                  "en": "For photograph."
-                              }
-                          }
-                      ],
-                      "image_val": "photo"
-                  }
-              ],
-              "vendor": "vgg_7"
-          },
-          "scale_ratio": {
-              "auto": true,
-              "scale_ratio": "2",
-              "max_width": 1920,
-              "max_height": 1080,
-              "min_width": "1",
-              "min_height": "0"
-          },
-          "noise_level": "0",
-          "auto_scale": true,
-          "file_formats": {
-              "png": {
-                  "enable": true,
-                  "mime": "image/png",
-                  "lossy": false,
-                  "animateable": false,
-                  "chrome_supported": true,
-                  "w2x_supported": true,
-                  "extentions": [
-                      "png"
-                  ],
-                  "output_option": ""
-              },
-              "jpeg": {
-                  "enable": true,
-                  "mime": "image/jpeg",
-                  "lossy": true,
-                  "animateable": false,
-                  "chrome_supported": true,
-                  "w2x_supported": true,
-                  "extentions": [
-                      "jpeg",
-                      "jpg"
-                  ]
-              },
-              "tiff": {
-                  "enable": true,
-                  "mime": "image/tiff",
-                  "lossy": true,
-                  "animateable": false,
-                  "chrome_supported": true,
-                  "w2x_supported": true,
-                  "extentions": [
-                      "tif",
-                      "tiff"
-                  ],
-                  "output_option": ""
-              },
-              "bmp": {
-                  "enable": true,
-                  "mime": "image/bmp",
-                  "lossy": false,
-                  "animateable": false,
-                  "chrome_supported": true,
-                  "w2x_supported": true,
-                  "extentions": [
-                      "bmp"
-                  ]
-              },
-              "gif": {
-                  "enable": true,
-                  "mime": "image/gif",
-                  "lossy": false,
-                  "animateable": true,
-                  "chrome_supported": true,
-                  "w2x_supported": true,
-                  "extentions": [
-                      "gif"
-                  ],
-                  "output_option": ""
-              },
-              "targa": {
-                  "enable": true,
-                  "mime": "image/x-targa",
-                  "lossy": true,
-                  "animateable": true,
-                  "chrome_supported": true,
-                  "w2x_supported": true,
-                  "extentions": [
-                      "gif"
-                  ],
-                  "output_option": ""
-              },
-              "bpg": {
-                  "enable": true,
-                  "mime": "image/x-bpg",
-                  "lossy": false,
-                  "animateable": true,
-                  "chrome_supported": false,
-                  "w2x_supported": false,
-                  "extentions": [
-                      "bpg"
-                  ],
-                  "output_option": "lossless=true"
-              },
-              "webp": {
-                  "enable": true,
-                  "mime": "image/x-webp",
-                  "lossy": false,
-                  "animateable": true,
-                  "chrome_supported": true,
-                  "w2x_supported": false,
-                  "extentions": [
-                      "webp"
-                  ],
-                  "output_option": "-lossless"
-              },
-              "mp4": {
-                  "enable": true,
-                  "mime": "video/mp4",
-                  "lossy": true,
-                  "animateable": true,
-                  "chrome_supported": true,
-                  "w2x_supported": false,
-                  "extentions": [
-                      "gif"
-                  ],
-                  "output_option": ""
-              }
-          },
-          "output": {
-              "path": "",
-              "file_format": "webp"
-          },
-          "parallel": "10",
-          "log": [],
-          "scale_down_ratio": 1
-      }
+        "waifu2x": {
+            "binarys": {
+                "waifu2x-caffe-cui": {
+                    "more_option": "-p cpu"
+                }
+            },
+            "use": "waifu2x-caffe-cui"
+        },
+        "model": {
+            "vendors": [
+                {
+                    "name": "vgg_7",
+                    "description": {
+                        "ja": "標準的な処理方法です。",
+                        "en": "Default"
+                    },
+                    "images": [
+                        {
+                            "name": "art",
+                            "description": {
+                                "ja": "アニメや漫画の絵を変換するのに適しています。",
+                                "en": "For paint as anime and manga."
+                            }
+                        },
+                        {
+                            "name": "art_y",
+                            "description": {
+                                "ja": "アニメや漫画の絵を変換するのに適しています。画像の輝度Y成分のみ変換します。",
+                                "en": "For paint as anime and manga. It converts only \"Y\" data."
+                            }
+                        },
+                        {
+                            "name": "photo",
+                            "description": {
+                                "ja": "写真を変換するのに適しています。",
+                                "en": "For photograph."
+                            }
+                        }
+                    ],
+                    "image_val": "art"
+                },
+                {
+                    "name": "upconv_7",
+                    "description": {
+                        "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用量が増えます。",
+                        "en": "Great but heavy"
+                    },
+                    "images": [
+                        {
+                            "name": "art",
+                            "description": {
+                                "ja": "アニメや漫画の絵を変換するのに適しています。",
+                                "en": "For paint as anime and manga."
+                            }
+                        },
+                        {
+                            "name": "photo",
+                            "description": {
+                                "ja": "写真を変換するのに適しています。",
+                                "en": "For photograph."
+                            }
+                        }
+                    ],
+                    "image_val": "art"
+                }
+            ],
+            "vendor": "upconv_7"
+        },
+        "scale_ratio": {
+            "auto": false,
+            "scale_ratio": "2",
+            "max_width": 1920,
+            "max_height": 1080,
+            "min_width": "200",
+            "min_height": "0"
+        },
+        "noise_level": "0",
+        "auto_scale": true,
+        "file_formats": {
+            "png": {
+                "enable": true,
+                "mime": "image/png",
+                "lossy": false,
+                "animateable": true,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "png"
+                ],
+                "output_option": ""
+            },
+            "jpeg": {
+                "enable": true,
+                "mime": "image/jpeg",
+                "lossy": true,
+                "animateable": false,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "jpeg",
+                    "jpg"
+                ],
+                "output_option": ""
+            },
+            "tiff": {
+                "enable": true,
+                "mime": "image/tiff",
+                "lossy": true,
+                "animateable": false,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "tif",
+                    "tiff"
+                ],
+                "output_option": ""
+            },
+            "bmp": {
+                "enable": true,
+                "mime": "image/bmp",
+                "lossy": false,
+                "animateable": false,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "bmp"
+                ]
+            },
+            "gif": {
+                "enable": true,
+                "mime": "image/gif",
+                "lossy": false,
+                "animateable": true,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "gif"
+                ],
+                "output_option": ""
+            },
+            "targa": {
+                "enable": true,
+                "mime": "image/x-targa",
+                "lossy": true,
+                "animateable": true,
+                "chrome_supported": true,
+                "w2x_supported": true,
+                "extentions": [
+                    "tga"
+                ],
+                "output_option": ""
+            },
+            "bpg": {
+                "enable": true,
+                "mime": "image/x-bpg",
+                "lossy": false,
+                "animateable": true,
+                "chrome_supported": false,
+                "w2x_supported": false,
+                "extentions": [
+                    "bpg"
+                ],
+                "output_option": "lossless=true"
+            },
+            "webp": {
+                "enable": true,
+                "mime": "image/x-webp",
+                "lossy": false,
+                "animateable": true,
+                "chrome_supported": true,
+                "w2x_supported": false,
+                "extentions": [
+                    "webp"
+                ],
+                "output_option": "-lossless"
+            },
+            "mp4": {
+                "enable": true,
+                "mime": "video/mp4",
+                "lossy": true,
+                "animateable": true,
+                "chrome_supported": true,
+                "w2x_supported": false,
+                "extentions": [
+                    "mp4"
+                ],
+                "output_option": ""
+            }
+        },
+        "output": {
+            "path": "",
+            "file_format": "png"
+        },
+        "parallel": "1",
+        "log": [
+            [
+                "2017-07-02T14:09:59.910Z"
+            ]
+        ],
+        "scale_down_ratio": 1,
+        "scale_down_unsharp": "12x6+0.5+0"
+    }
     if(DEBUG) console.log(setting)
       let savedata = require(setting_path)
     if(DEBUG) console.log(savedata)
@@ -293,7 +297,7 @@
       // 関数type()……File APIを読み取りファイルタイプを出力
       //               returntypeはtextかisReadable
       function type(file,returntype){ 
-        if(DEBUG) console.log(file)
+        // if(DEBUG) console.log(file)
         let answer = false
         try{
           fs.statSync(file.path)
@@ -339,7 +343,7 @@
               break;
           }
         }
-        if(DEBUG) console.log(answer)
+        // if(DEBUG) console.log(answer)
         return answer
       }
 
@@ -389,11 +393,7 @@
         // 処理中ファイル一覧の出力
         if(files_running){
         for(let key in files_running){
-          let _this = files_running[key].file
-              mimetype = type(_this,'text')
-              isReadable = type(_this,'isReadable')
-          if(DEBUG) console.table()
-          files_running_html += "<p class='changeable pb-0'>" + "id:" + key + " (" + mimetype + "," + isReadable + "," + Number(_this.size) + "," + _this.image.width + "x" + _this.image.height + ")" + "</p>"
+          files_running_html += "<p class='changeable pb-0'>" + "id:" + key + "</p>"
         }
         if(files_running_html.length < 2) files_running_html = "%i18n:text.files.nofile%"
         $(display_files_running_selector).html(files_running_html.replace(/%i18n:(.+?)%/g,replace_i18n))
@@ -513,11 +513,12 @@
         changed_files_list()
         
       })
-      $("button[name='DEL']").on('click',function(e){ e.preventDefault(); files_chosen = []; rmdirForceSync(temp);
-        try{
-          fs.mkdirSync(temp)
-        }catch(e){}
-        changed_files_list() })
+      $("button[name='DEL']").on('click',function(e){
+        e.preventDefault()
+        save()
+        rmdirForceSync(temp)
+        window.location.reload()
+      })
       $("button[name='PAUSE']").on('click',function(e){ e.preventDefault(); 
         if(PAUSE){
           PAUSE = false
@@ -533,7 +534,9 @@
       })
 
       function converter(){
+        let nofile = true
         for(let id in files_reserved){
+          nofile = false
           files_running[id] = files_reserved[id]
           delete files_reserved[id]
           files_running[id].process.log = {}
@@ -543,7 +546,16 @@
           files_running[id].process.tmpdpnx = `${files_running[id].process.tmpdpn}.${tmp_ext}`
           files_running[id].process.log[timestamp.toISOString()] = "CONVERT STARTED"
           files_running[id].process.t = 0
-
+          let dest = ""
+          files_running[id].process.outname = `waifued_noise${files_running[id].order.noise_level}_scale${files_running[id].process.scale_ratio}_${files_running[id].file.before.n}`
+          if(DEBUG) console.log(files_running[id].order.output.path)
+          if(files_running[id].order.output.path == ""){
+            if(DEBUG) console.log("A")
+            dest = `${files_running[id].file.before.d}${files_running[id].file.before.p}${files_running[id].process.outname}.${files_running[id].order.output.file_format}`
+          } else {
+            if(DEBUG) console.log("B")
+            dest = `${files_running[id].order.output.path}${files_running[id].process.outname}.${files_running[id].order.output.file_format}`
+          }
           setTimeout(changed_files_list(),500)
           do{
             if(files_running[id].process.t == 0){
@@ -596,26 +608,29 @@
           files_running[id].process.resize_set = ""
           if(files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "width") files_running[id].process.resize_set = `-resize ${files_running[id].order.scale_ratio.min_width}x -unsharp ${files_running[id].order.scale_down_unsharp} `
           if(files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "height") files_running[id].process.resize_set = `-resize x${files_running[id].order.scale_ratio.min_height} -unsharp ${files_running[id].order.scale_down_unsharp} `
-          if(!files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "width") files_running[id].process.resize_set = `-resize ${files_running[id].file.before.image.width * files_running[id].order.scale_ratio.scale_ratio / files_running[id].order.scale_down_ratio}x -unsharp ${files_running[id].order.scale_down_unsharp} `
-          if(!files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "height") files_running[id].process.resize_set = `-resize x${files_running[id].file.before.image.height * files_running[id].order.scale_ratio.scale_ratio / files_running[id].order.scale_down_ratio} -unsharp ${files_running[id].order.scale_down_unsharp} `
+          if(!files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "width") files_running[id].process.resize_set = `-resize ${files_running[id].file.image.width * files_running[id].order.scale_ratio.scale_ratio / files_running[id].order.scale_down_ratio}x -unsharp ${files_running[id].order.scale_down_unsharp} `
+          if(!files_running[id].order.scale_auto && files_running[id].process.scale_whichis == "height") files_running[id].process.resize_set = `-resize x${files_running[id].file.image.height * files_running[id].order.scale_ratio.scale_ratio / files_running[id].order.scale_down_ratio} -unsharp ${files_running[id].order.scale_down_unsharp} `
 
-          if(files_running[id].order.output.path == "") files_running[id].order.output.path = `${files_running[id].file.before.d}${files_running[id].file.before.p}`
-          files_running[id].process.outname = `waifued_${files_running[id].file.before.n}`
           try{
             fs.mkdirSync(files_running[id].order.output.path)
           }catch(e){}
           timestamp = new Date()
-          command = `magick convert ${files_running[id].process.resize_set} ${files_running[id].order.file_formats[files_running[id].order.output.file_format].output_option.replace("\n"," ")} -verbose "${files_running[id].process.tmpdpnx}" "${files_running[id].order.output.path}${files_running[id].process.outname}.${files_running[id].order.output.file_format}"`
+          command = `magick convert ${files_running[id].process.resize_set} ${files_running[id].order.file_formats[files_running[id].order.output.file_format].output_option.replace("\n"," ")} -verbose "${files_running[id].process.tmpdpnx}" "${dest}"`
           files_running[id].process.log[timestamp.toISOString()] = execSync(command)
           if(DEBUG) console.log(command)
           if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(files_running[id].process.log[timestamp.toISOString()])))
-          fs.unlinkSync(files_running[id].process.tmpdpnx)
+          try{setTimeout(fs.unlinkSync(files_running[id].process.tmpdpnx),256)}catch(e){}
           files_finished[id] = files_running[id]
           delete files_running[id]
           break;
         }
         changed_files_list()
-        if(!PAUSE && files_reserved != {}) setTimeout(converter(),500)
+        if(!nofile){setTimeout(converter(),500)}
+        else{
+          try{
+            rmdirForceSync(temp)
+          }catch(e){}
+        }
       }
 
       // 動画・アニメーション登録
@@ -641,43 +656,48 @@
         let str_x = logstr.split(" ")[3].split("x")
         let str_w = str_x[0]
         let str_h = str_x[1].split("+")[0]
-        if(DEBUG) console.log([str_x,str_w,str_h])
-        file.before.image.width = str_w
-        file.before.image.height = str_h
         dir_register(dist,file.before)
       }
       
       function dir_register(path,zbefore){
         let zbefore_path = zbefore.p
         let zbefore_name = zbefore.n
+        let zbefore_pn = zbefore_path + zbefore_name
         if(DEBUG) console.log(zbefore_path)
         if(DEBUG) console.log(zbefore_name)
         if(DEBUG) console.log(path + " register as directory")
-        fs.readdirSync(path).forEach(function(myname,index){
+        let files = fs.readdirSync(path)
+        for(let f = 0; f < files.length; f++){
+          myname = files[f]
           if(DEBUG) console.log(myname)
-          let image= new Image
           let zfile = {}
-          zfile.before = zbefore
+          let image= new Image
+          zfile.path = `${path}\\${myname}`
+          if(DEBUG) console.log(zfile.path)
+          image.src=zfile.path
+          if(DEBUG) console.log(zfile.image)
+          zfile.before = {}
           zfile.before.d = zbefore.d
-          zfile.before.p = `${zbefore_path}${zbefore_name}_waifued\\`
+          zfile.before.p = `${zbefore_pn}_waifued\\`
           try{
             fs.mkdirSync(`${zfile.before.d}${zfile.before.p}`)
           }catch(e){}
           zfile.before.n = myname.slice(0,myname.lastIndexOf("."))
           zfile.before.x = myname.substr(myname.lastIndexOf("."))
-          zfile.path = `${path}\\${myname}`
-          if(DEBUG) console.log(zfile.path)
-          image.src=zfile.path
-          if(DEBUG) console.log(zfile.image)
           zfile.image = image
-          zfile.image.width = zbefore.image.width
-          zfile.image.height = zbefore.image.height
-          zfile.name = name
+          zfile.name = myname
           if(DEBUG) console.log(image)
+          let log = execSync(`magick identify "${zfile.path}"`)
+          let logstr = String.fromCharCode.apply(null, new Uint8Array(log))
+          let str_x = logstr.split(" ")[3].split("x")
+          let str_w = str_x[0]
+          let str_h = str_x[1].split("+")[0]
+          zfile.image.width = str_w
+          zfile.image.height = str_h
           zfile.type = `image/${tmp_ext}`
           if(DEBUG) console.log(zfile)
-          setTimeout(img_register(zfile),1000)
-        })
+          setTimeout(img_register(zfile),2048)
+        }
       }
 
       // 画像登録(最終)
@@ -703,12 +723,12 @@
           let ratio_h = 0
               ratio_w = 0
           if(files_reserved[id].order.scale_ratio.min_width > 0){
-            ratio_w = files_reserved[id].order.scale_ratio.min_width / files_reserved[id].file.before.image.width / files_reserved[id].order.scale_down_ratio
+            ratio_w = files_reserved[id].order.scale_ratio.min_width / files_reserved[id].file.image.width / files_reserved[id].order.scale_down_ratio
           } else {
             ratio_w = 1
           }
           if(files_reserved[id].order.scale_ratio.min_height > 0){
-            ratio_h = files_reserved[id].order.scale_ratio.min_height / files_reserved[id].file.before.image.height / files_reserved[id].order.scale_down_ratio
+            ratio_h = files_reserved[id].order.scale_ratio.min_height / files_reserved[id].file.image.height / files_reserved[id].order.scale_down_ratio
           } else {
             ratio_h = 1
           }
@@ -727,18 +747,18 @@
             ratio_w = 0
         if(files_reserved[id].order.scale_ratio.auto){
           if(files_reserved[id].order.scale_ratio.min_width > 0){
-            ratio_w = files_reserved[id].order.scale_ratio.min_width / files_reserved[id].file.before.image.width
+            ratio_w = files_reserved[id].order.scale_ratio.min_width / files_reserved[id].file.image.width
           } else {
             ratio_w = 0
           }
           if(files_reserved[id].order.scale_ratio.min_height > 0){
-            ratio_h = files_reserved[id].order.scale_ratio.min_height / files_reserved[id].file.before.image.height
+            ratio_h = files_reserved[id].order.scale_ratio.min_height / files_reserved[id].file.image.height
           } else {
             ratio_h = 0
           }
         } else {
-          ratio_w = files_reserved[id].file.before.image.width * files_reserved[id].order.scale_ratio.scale_ratio / files_reserved[id].order.scale_down_ratio
-          ratio_w = files_reserved[id].file.before.image.width * files_reserved[id].order.scale_ratio.scale_ratio / files_reserved[id].order.scale_down_ratio
+          ratio_w = files_reserved[id].file.image.width * files_reserved[id].order.scale_ratio.scale_ratio / files_reserved[id].order.scale_down_ratio
+          ratio_w = files_reserved[id].file.image.width * files_reserved[id].order.scale_ratio.scale_ratio / files_reserved[id].order.scale_down_ratio
         }
         if(DEBUG) console.log("w:"+ ratio_w)
         if(DEBUG) console.log("h:"+ ratio_h)
@@ -1065,6 +1085,8 @@
       // output                                                      //
       // 出力設定                                                    //
       /////////////////////////////////////////////////////////////////
+      setting.output.path = ""
+      save()
       function output_exts_html(){
         let answer = ""
         for(let key in setting.file_formats){
