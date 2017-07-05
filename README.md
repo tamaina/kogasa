@@ -52,7 +52,6 @@ waifu2xバージョン情報
   - GPUがない場合、オプションに-p cpuを指定しないと動きません。
 - converter-cpp
   - v4.0 Released by DeadSix27
-  - **現在利用不可**
 
 ◎settings.jsonの変更により、その他バイナリに対応(CUIでオプションがこれらに準拠されているもの)
 
