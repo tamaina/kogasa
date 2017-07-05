@@ -26,7 +26,7 @@
           npath = require('path')
           tmp = require('tmp')
           execSync = require('child_process').execSync
-    const DEBUG = false
+    const DEBUG = true
           setting_path = "./setting.json"
           i18n = {}
           i18n["here"] = require('./locales/' + window.navigator.language + '.json')
@@ -45,212 +45,222 @@
           tmp_ext = "png"
       // settingの素(settingが無い場合の初期値決定、およびサジェスト用)
       let setting = {
-        "waifu2x": {
-            "binarys": {
-                "waifu2x-caffe-cui": {
-                    "more_option": "-p cpu"
-                }
-            },
-            "use": "waifu2x-caffe-cui"
-        },
-        "model": {
-            "vendors": [
-                {
-                    "name": "vgg_7",
-                    "description": {
-                        "ja": "標準的な処理方法です。",
-                        "en": "Default"
-                    },
-                    "images": [
-                        {
-                            "name": "art",
-                            "description": {
-                                "ja": "アニメや漫画の絵を変換するのに適しています。",
-                                "en": "For paint as anime and manga."
-                            }
-                        },
-                        {
-                            "name": "art_y",
-                            "description": {
-                                "ja": "アニメや漫画の絵を変換するのに適しています。画像の輝度Y成分のみ変換します。",
-                                "en": "For paint as anime and manga. It converts only \"Y\" data."
-                            }
-                        },
-                        {
-                            "name": "photo",
-                            "description": {
-                                "ja": "写真を変換するのに適しています。",
-                                "en": "For photograph."
-                            }
-                        }
-                    ],
-                    "image_val": "art"
-                },
-                {
-                    "name": "upconv_7",
-                    "description": {
-                        "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用量が増えます。",
-                        "en": "Great but heavy"
-                    },
-                    "images": [
-                        {
-                            "name": "art",
-                            "description": {
-                                "ja": "アニメや漫画の絵を変換するのに適しています。",
-                                "en": "For paint as anime and manga."
-                            }
-                        },
-                        {
-                            "name": "photo",
-                            "description": {
-                                "ja": "写真を変換するのに適しています。",
-                                "en": "For photograph."
-                            }
-                        }
-                    ],
-                    "image_val": "art"
-                }
-            ],
-            "vendor": "upconv_7"
-        },
-        "scale_ratio": {
-            "auto": false,
-            "scale_ratio": "2",
-            "max_width": 1920,
-            "max_height": 1080,
-            "min_width": "200",
-            "min_height": "0"
-        },
-        "noise_level": "0",
-        "auto_scale": true,
-        "file_formats": {
-            "png": {
-                "enable": true,
-                "mime": "image/png",
-                "lossy": false,
-                "animateable": true,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "png"
-                ],
-                "output_option": ""
-            },
-            "jpeg": {
-                "enable": true,
-                "mime": "image/jpeg",
-                "lossy": true,
-                "animateable": false,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "jpeg",
-                    "jpg"
-                ],
-                "output_option": ""
-            },
-            "tiff": {
-                "enable": true,
-                "mime": "image/tiff",
-                "lossy": true,
-                "animateable": false,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "tif",
-                    "tiff"
-                ],
-                "output_option": ""
-            },
-            "bmp": {
-                "enable": true,
-                "mime": "image/bmp",
-                "lossy": false,
-                "animateable": false,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "bmp"
-                ]
-            },
-            "gif": {
-                "enable": true,
-                "mime": "image/gif",
-                "lossy": false,
-                "animateable": true,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "gif"
-                ],
-                "output_option": ""
-            },
-            "targa": {
-                "enable": true,
-                "mime": "image/x-targa",
-                "lossy": true,
-                "animateable": true,
-                "chrome_supported": true,
-                "w2x_supported": true,
-                "extentions": [
-                    "tga"
-                ],
-                "output_option": ""
-            },
-            "bpg": {
-                "enable": true,
-                "mime": "image/x-bpg",
-                "lossy": false,
-                "animateable": true,
-                "chrome_supported": false,
-                "w2x_supported": false,
-                "extentions": [
-                    "bpg"
-                ],
-                "output_option": "lossless=true"
-            },
-            "webp": {
-                "enable": true,
-                "mime": "image/x-webp",
-                "lossy": false,
-                "animateable": true,
-                "chrome_supported": true,
-                "w2x_supported": false,
-                "extentions": [
-                    "webp"
-                ],
-                "output_option": "-lossless"
-            },
-            "mp4": {
-                "enable": true,
-                "mime": "video/mp4",
-                "lossy": true,
-                "animateable": true,
-                "chrome_supported": true,
-                "w2x_supported": false,
-                "extentions": [
-                    "mp4"
-                ],
-                "output_option": ""
-            }
-        },
-        "output": {
-            "path": "",
-            "file_format": "png"
-        },
-        "parallel": "1",
-        "log": [
-            [
-                "2017-07-02T14:09:59.910Z"
-            ]
-        ],
-        "scale_down_ratio": 1,
-        "scale_down_unsharp": "12x6+0.5+0",
-        "temp": {
-            "path": "",
-            "ext": "" 
-        }
-    }
+          "waifu2x": {
+              "binarys": {
+                  "waifu2x-converter-cpp": {
+                      "more_option": "",
+                      "model_support": {
+                          "upconv_7": false,
+                          "vgg_7": true
+                      },
+                      "model_use": "vgg_7"
+                  },
+                  "waifu2x-caffe-cui": {
+                      "more_option": "-p cpu",
+                      "model_support": {
+                          "upconv_7": true,
+                          "vgg_7": true
+                      },
+                      "model_use": "vgg_7"
+                  }
+              },
+              "use": "waifu2x-converter-cpp"
+          },
+          "model": {
+              "vendors": {
+                  "vgg_7": {
+                      "description": {
+                          "ja": "標準的な処理方法です。",
+                          "en": "Default"
+                      },
+                      "images": [
+                          {
+                              "name": "art",
+                              "description": {
+                                  "ja": "アニメや漫画の絵を変換するのに適しています。",
+                                  "en": "For paint as anime and manga."
+                              }
+                          },
+                          {
+                              "name": "art_y",
+                              "description": {
+                                  "ja": "アニメや漫画の絵を変換するのに適しています。画像の輝度Y成分のみ変換します。",
+                                  "en": "For paint as anime and manga. It converts only \"Y\" data."
+                              }
+                          },
+                          {
+                              "name": "photo",
+                              "description": {
+                                  "ja": "写真を変換するのに適しています。",
+                                  "en": "For photograph."
+                              }
+                          }
+                      ],
+                      "image_val": "photo"
+                  },
+                  "upconv_7": {
+                      "description": {
+                          "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用量が増えます。",
+                          "en": "Great but heavy"
+                      },
+                      "images": [
+                          {
+                              "name": "art",
+                              "description": {
+                                  "ja": "アニメや漫画の絵を変換するのに適しています。",
+                                  "en": "For paint as anime and manga."
+                              }
+                          },
+                          {
+                              "name": "photo",
+                              "description": {
+                                  "ja": "写真を変換するのに適しています。",
+                                  "en": "For photograph."
+                              }
+                          }
+                      ],
+                      "image_val": "photo"
+                  }
+              }
+          },
+          "scale_ratio": {
+              "auto": false,
+              "scale_ratio": "2",
+              "max_width": 1920,
+              "max_height": 1080,
+              "min_width": "200",
+              "min_height": "0"
+          },
+          "noise_level": "1",
+          "auto_scale": true,
+          "file_formats": {
+              "png": {
+                  "enable": true,
+                  "mime": "image/png",
+                  "lossy": false,
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "png"
+                  ],
+                  "output_option": ""
+              },
+              "jpeg": {
+                  "enable": true,
+                  "mime": "image/jpeg",
+                  "lossy": true,
+                  "animateable": false,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "jpeg",
+                      "jpg"
+                  ],
+                  "output_option": ""
+              },
+              "tiff": {
+                  "enable": true,
+                  "mime": "image/tiff",
+                  "lossy": true,
+                  "animateable": false,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "tif",
+                      "tiff"
+                  ],
+                  "output_option": ""
+              },
+              "bmp": {
+                  "enable": true,
+                  "mime": "image/bmp",
+                  "lossy": false,
+                  "animateable": false,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "bmp"
+                  ]
+              },
+              "gif": {
+                  "enable": true,
+                  "mime": "image/gif",
+                  "lossy": false,
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "gif"
+                  ],
+                  "output_option": ""
+              },
+              "targa": {
+                  "enable": true,
+                  "mime": "image/x-targa",
+                  "lossy": true,
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": true,
+                  "extentions": [
+                      "tga"
+                  ],
+                  "output_option": ""
+              },
+              "bpg": {
+                  "enable": true,
+                  "mime": "image/x-bpg",
+                  "lossy": false,
+                  "animateable": true,
+                  "chrome_supported": false,
+                  "w2x_supported": false,
+                  "extentions": [
+                      "bpg"
+                  ],
+                  "output_option": "lossless=true"
+              },
+              "webp": {
+                  "enable": true,
+                  "mime": "image/x-webp",
+                  "lossy": false,
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": false,
+                  "extentions": [
+                      "webp"
+                  ],
+                  "output_option": "-lossless"
+              },
+              "mp4": {
+                  "enable": true,
+                  "mime": "video/mp4",
+                  "lossy": true,
+                  "animateable": true,
+                  "chrome_supported": true,
+                  "w2x_supported": false,
+                  "extentions": [
+                      "mp4"
+                  ],
+                  "output_option": ""
+              }
+          },
+          "output": {
+              "path": "",
+              "file_format": "png"
+          },
+          "parallel": "1",
+          "log": [
+              [
+                  "2017-07-02T14:09:59.910Z"
+              ]
+          ],
+          "scale_down_ratio": 1,
+          "scale_down_unsharp": "12x6+0.5+0",
+          "temp": {
+              "path": "",
+              "ext": ""
+          }
+      }
 
     if(setting.temp.path != "") temp = setting.temp.path
     if(setting.temp.ext != "") tmp_ext = setting.temp.ext
@@ -582,16 +592,9 @@
               else files_running[id].process.noise = false
             }
 
-            function search_vendor(id){
-              for(let x = 0; x < files_running[id].order.model.vendors.length; x++){
-                if( files_running[id].order.model.vendor == files_running[id].order.model.vendors[x].name ) return x
-              }
-            }
-            let x = search_vendor(id)
-
             if(files_running[id].process.noise){
               timestamp = new Date()
-              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m noise ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --noise_level ${files_running[id].order.noise_level} --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[x].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
+              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m noise ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --noise_level ${files_running[id].order.noise_level} --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[files_running[id].order.model.vendor].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
               files_running[id].process.log[timestamp.toISOString()] = execSync(command)
               files_running[id].process.t++
               if(DEBUG) console.log(command)
@@ -599,7 +602,7 @@
             }
             if( files_running[id].process.scale_ratio > 1 ){
               timestamp = new Date()
-              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m scale ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --scale_ratio 2 --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[x].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
+              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m scale ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --scale_ratio 2 --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[files_running[id].order.model.vendor].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
               files_running[id].process.log[timestamp.toISOString()] = execSync(command)
               files_running[id].process.t++
               if(DEBUG) console.log(command)
@@ -634,6 +637,9 @@
         else{
           try{
             rmdirForceSync(temp)
+          }catch(e){}
+          try{
+            fs.mkdirSync(temp)
           }catch(e){}
         }
       }
@@ -782,7 +788,6 @@
       /*                                                                 */
       /* *************************************************************** */
 
-
       /////////////////////////////////////////////////////////////////
       // w2xbins                                                     //
       // 利用するバイナリ                                            //
@@ -794,7 +799,7 @@
           answer+=`
           <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="w2xbin_${key}">
             <input type="radio" id="w2xbin_${key}" name="w2xbins" value="${key}" class="mdl-radio__button">
-            <span class="mdl-radio__label">${key}.exe</span>
+            <span class="mdl-radio__label">${key}</span>
           </label>
           `
         }
@@ -804,20 +809,33 @@
 
       // 初期設定処理
       $("input[name='w2xbins']").prop("checked",false)
-      $("input[name='w2xbins'][value='"+ setting.waifu2x.use +"']").prop("checked",true).trigger('change')
+      $("input[name='w2xbins'][value='"+ setting.waifu2x.use +"']").prop("checked",true)
       $("textarea#w2x_option").val(setting.waifu2x.binarys[setting.waifu2x.use].more_option).trigger('change')
+      $("input[name='w2xbins']").trigger("change")
 
       // 変更検知
       $("input[name='w2xbins']").on('change',function(){
-        setting.waifu2x.use = $(this).val()
-        $("textarea#w2x_option").val(setting.waifu2x.binarys[$(this).val()].more_option)
+        setting.waifu2x.use = $("input[name='w2xbins']:checked").val()
+        $("textarea#w2x_option").val(setting.waifu2x.binarys[setting.waifu2x.use].more_option).trigger("change")
+        setTimeout(reset_model_vendor(setting.waifu2x.use),128)
+        $("#model_vendor").val(setting.waifu2x.binarys[setting.waifu2x.use].model_use).trigger("change")
         save()
       })
       $("textarea#w2x_option").on('change',function(){
         setting.waifu2x.binarys[$("input[name='w2xbins']:checked").val()].more_option = $(this).val()
         save()
       })
-      
+      function reset_model_vendor(e){
+        $("#model_vendor option").remove()
+        for(var l in setting.waifu2x.binarys[e].model_support){
+          if(setting.waifu2x.binarys[e].model_support[l]){
+            $(`<option value="${l}">${l}</option>
+            `).appendTo(`#model_vendor`)
+          }
+        }
+      }
+      reset_model_vendor(setting.waifu2x.use)
+
       /////////////////////////////////////////////////////////////////
       // model                                                       //
       // 利用するモデル                                              //
@@ -825,88 +843,76 @@
       function model_vendor_html(){
         let answer=""
         let images_form=""
-        for(let i = 0; i < setting.model.vendors.length; i++){
-          let _this = setting.model.vendors[i]
-          answer+=`<option value="${_this.name}" data-number="${i}">${_this.name}</option>
-          `
-          images_form += model_image_html(i)
+        for(let key in setting.model.vendors){
+          if(DEBUG) console.log(key)
+          images_form += model_image_html(key)
         }
         $("#model_image_wrap").html(images_form.replace(/%i18n:(.+?)%/g,replace_i18n))
-        return answer
       }
-      function model_image_html(i){
-        let vendor_name = setting.model.vendors[i].name
+      function model_image_html(key){
         let answer=""
         answer+=`
-                <div class="mdl-selectfield mdl-js-selectfield model_image_selectfields_wrap mdl-textfield--floating-label p-0" id="model_image_${vendor_name}" data-vendor="${vendor_name}" data-vendor-number="${i}">
-                  <select id="selectform_model_image_${vendor_name}" class="mdl-selectfield__select model_image_selectfield" data-vendor="${vendor_name}" data-vendor-number="${i}">
+                <div class="mdl-selectfield mdl-js-selectfield model_image_selectfields_wrap mdl-textfield--floating-label p-0" id="model_image_${key}" data-vendor="${key}">
+                  <select id="selectform_model_image_${key}" class="mdl-selectfield__select model_image_selectfield" data-vendor="${key}">
         `
-        for(let j = 0; j < setting.model.vendors[i].images.length; j++){
-          let _this = setting.model.vendors[i].images[j]
-          answer += `<option value="${_this.name}" data-number="${j}">${_this.name}</option>
+        for(let i = 0; i < setting.model.vendors[key].images.length; i++){
+          let _this = setting.model.vendors[key].images[i]
+          answer += `<option value="${_this.name}" data-number="${i}">${_this.name}</option>
           `
         }
         answer+=`
                   </select>
-                  <label class="mdl-selectfield__label" for="selectform_model_image_${vendor_name}"></label>
+                  <label class="mdl-selectfield__label" for="selectform_model_image_${key}"></label>
                   <span class="mdl-selectfield__error">%i18n:text.error.selectavalue%</span>
                 </div>
         `
         return answer
       }
-      $("#model_vendor").html(model_vendor_html)
+      model_vendor_html()
 
       // 初期設定処理
-      $("#model_vendor").val(setting.model.vendor)
-      for(let i = 0; i < setting.model.vendors.length; i++){
-        if(setting.model.vendors[i].name == setting.model.vendor){
-          $("#model_vendor_description").html(function(){
-            let a = setting.model.vendors[i].description[window.navigator.language]
-            if(a == undefined) a = setting.model.vendors[o].description.ja
-            else if(a == undefined) a = ""
-            return a
-          })
-        break
-        }
-      }
+      $("#model_vendor_description").html(function(){
+        let a = setting.model.vendors[$("#model_vendor").val()].description[window.navigator.language]
+        if(a == undefined) a = setting.model.vendors[key].description.ja
+        else if(a == undefined) a = ""
+        return a
+      })
 
-      function model_image_change(vendor_num){
+      function model_image_change(key){
         $(".model_image_selectfields_wrap").hide()
-        $(".model_image_selectfields_wrap[data-vendor-number='"+ vendor_num +"']").show()
-        $(".model_image_selectfield[data-vendor-number='"+ vendor_num +"']").val(setting.model.vendors[vendor_num].image_val).trigger('change')
+        $(".model_image_selectfields_wrap[data-vendor='"+ key +"']").show()
+        $(".model_image_selectfield[data-vendor='"+ key +"']").val(setting.model.vendors[key].image_val).trigger('change')
       }
       // 変更検知
       $("#model_vendor").on("change",function(){
-        if(DEBUG) console.log(this)
-        let vendor_num = $(`#model_vendor option[value="${$('#model_vendor').val()}"]`).attr("data-number")
-        setting.model.vendor =$(this).val()
+        setting.waifu2x.binarys[$("input[name='w2xbins']:checked").val()].model_use =$(this).val()
+        save()
         $("#model_vendor_description").html(function(){
-          let a = setting.model.vendors[vendor_num].description[window.navigator.language]
-          if(a == undefined) a = setting.model.vendors[vendor_num].description.ja
+          let a = setting.model.vendors[setting.waifu2x.binarys[$("input[name='w2xbins']:checked").val()].model_use].description[window.navigator.language]
+          if(a == undefined) a = setting.model.vendors[$(this).val()].description.ja
           else if(a == undefined) a = ""
           return a
         })
-        model_image_change(vendor_num)
+        model_image_change($(this).val())
         save()
       })
       $(".model_image_selectfield").on("change",function(){
-        if(DEBUG) console.log(this)
-        let vendor_num = $(this).attr("data-vendor-number")
-            image_num = $(`.model_image_selectfield[data-vendor-number="${vendor_num}"] option[value="${$(this).val()}"]`).attr("data-number")
-        setting.model.vendors[vendor_num].image_val = $(this).val()
+        let vendor = $("#model_vendor").val()
+        let image_num = $(`.model_image_selectfield[data-vendor="${vendor}"] option[value="${$(this).val()}"]`).attr("data-number")
+        if(DEBUG) console.log($(this).val())
+        setting.model.vendors[vendor].image_val = $(this).val()
         save()
         $("#model_image_description").html(function(){
-          let a = setting.model.vendors[vendor_num].images[image_num].description[window.navigator.language]
-          if(a == undefined) a = setting.model.vendors[vendor_num].images[image_num].description.ja
+          let a = setting.model.vendors[vendor].images[image_num].description[window.navigator.language]
+          if(a == undefined) a = setting.model.vendors[vendor].images[image_num].description.ja
           else if(a == undefined) a = ""
           return a
         })
         save()
       })
 
-      model_image_change($(`option[value="${setting.model.vendor}"]`).attr("data-number"))
-
-
+      model_image_change($("#model_vendor").val())
+      
       /////////////////////////////////////////////////////////////////
       // noise_level                                                 //
       // デノイズレベル                                              //
@@ -1128,6 +1134,7 @@
     })
     
     $(window).on('load',function(){
+      $("input[name='w2xbins']").trigger("change")
       setTimeout(function(){componentHandler.upgradeAllRegistered();},500)
     })
     </script>

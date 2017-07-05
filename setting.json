@@ -1,16 +1,28 @@
 {
     "waifu2x": {
         "binarys": {
+            "waifu2x-converter-cpp": {
+                "more_option": "",
+                "model_support": {
+                    "upconv_7": false,
+                    "vgg_7": true
+                },
+                "model_use": "vgg_7"
+            },
             "waifu2x-caffe-cui": {
-                "more_option": "-p cpu"
+                "more_option": "-p cpu",
+                "model_support": {
+                    "upconv_7": true,
+                    "vgg_7": true
+                },
+                "model_use": "upconv_7"
             }
         },
         "use": "waifu2x-caffe-cui"
     },
     "model": {
-        "vendors": [
-            {
-                "name": "vgg_7",
+        "vendors": {
+            "vgg_7": {
                 "description": {
                     "ja": "標準的な処理方法です。",
                     "en": "Default"
@@ -40,8 +52,7 @@
                 ],
                 "image_val": "art"
             },
-            {
-                "name": "upconv_7",
+            "upconv_7": {
                 "description": {
                     "ja": "vgg_7より高品質・高速ですが、VRAM(メモリー)使用量が増えます。",
                     "en": "Great but heavy"
@@ -64,8 +75,7 @@
                 ],
                 "image_val": "art"
             }
-        ],
-        "vendor": "upconv_7"
+        }
     },
     "scale_ratio": {
         "auto": false,
