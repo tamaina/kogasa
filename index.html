@@ -561,14 +561,17 @@
           files_running[id].process.log[timestamp.toISOString()] = "CONVERT STARTED"
           files_running[id].process.t = 0
           let dest = ""
+          let dest_dir = ""
           files_running[id].process.outname = `waifued_${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use}_${files_running[id].order.model.vendors[files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use].image_val}_noise${files_running[id].order.noise_level}_scale${files_running[id].process.scale_ratio}_${files_running[id].file.before.n}`
           if(DEBUG) console.log(files_running[id].order.output.path)
           if(files_running[id].order.output.path == ""){
             if(DEBUG) console.log("A")
             dest = `${files_running[id].file.before.d}${files_running[id].file.before.p}${files_running[id].process.outname}.${files_running[id].order.output.file_format}`
+            dest_dir = `${files_running[id].file.before.d}${files_running[id].file.before.p}`
           } else {
             if(DEBUG) console.log("B")
             dest = `${files_running[id].order.output.path}${files_running[id].process.outname}.${files_running[id].order.output.file_format}`
+            dest_dir = `${files_running[id].order.output.path}`
           }
           files_running[id].process.dest = dest
           if(files_running[id].order.noise_level > 0 && files_running[id].order.file_formats[files_running[id].file.file_format].lossy) files_running[id].process.noise = true
@@ -617,7 +620,7 @@
           else files_running[id].process.resize_set = `-resize 1200x1200 -unsharp ${files_running[id].order.scale_down_unsharp} `
 
           try{
-            fs.mkdirSync(files_running[id].process.resize_set)
+            fs.mkdirSync(dest_dir)
           }catch(e){}
           timestamp = new Date()
           command = `magick convert ${files_running[id].process.resize_set} ${files_running[id].order.file_formats[files_running[id].order.output.file_format].output_option.replace("\n"," ")} -verbose "${files_running[id].process.tmpdpnx}" "${dest}"`

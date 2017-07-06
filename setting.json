@@ -78,8 +78,8 @@
         }
     },
     "scale_ratio": {
-        "auto": true,
-        "scale_ratio": "3",
+        "auto": false,
+        "scale_ratio": "2",
         "max_width": 1920,
         "max_height": 1080,
         "min_width": "2000",
