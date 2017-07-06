@@ -78,14 +78,14 @@
         }
     },
     "scale_ratio": {
-        "auto": false,
+        "auto": true,
         "scale_ratio": "3",
         "max_width": 1920,
         "max_height": 1080,
-        "min_width": "200",
+        "min_width": "2000",
         "min_height": "0"
     },
-    "noise_level": "1",
+    "noise_level": "2",
     "auto_scale": true,
     "file_formats": {
         "png": {
@@ -208,7 +208,7 @@
             "2017-07-02T14:09:59.910Z"
         ]
     ],
-    "scale_down_ratio": 1,
+    "scale_down_ratio": "0.3",
     "scale_down_unsharp": "12x6+0.5+0",
     "temp": {
         "path": "",
