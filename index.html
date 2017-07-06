@@ -608,16 +608,19 @@
               files_running[id].process.t++
               if(DEBUG) console.log(command)
               if(DEBUG) console.log(String.fromCharCode.apply(null, new Uint8Array(files_running[id].process.log[timestamp.toISOString()])))
+              files_running[id].process.scale_ratio = files_running[id].process.scale_ratio / 2
             }
-            files_running[id].process.scale_ratio = files_running[id].process.scale_ratio / 2
           } while( files_running[id].process.scale_ratio > 1 )
 
           files_running[id].process.resize_set = ""
-          if(files_running[id].order.scale_ratio.auto == true && files_running[id].process.scale_whichis == "width") files_running[id].process.resize_set = `-resize ${files_running[id].order.scale_ratio.min_width}x -unsharp ${files_running[id].order.scale_down_unsharp} `
-          else if(files_running[id].order.scale_ratio.auto == true && files_running[id].process.scale_whichis == "height") files_running[id].process.resize_set = `-resize x${files_running[id].order.scale_ratio.min_height} -unsharp ${files_running[id].order.scale_down_unsharp} `
-          else if(files_running[id].order.scale_ratio.auto == false && files_running[id].process.scale_whichis == "width") files_running[id].process.resize_set = `-resize ${files_running[id].file.image.width * files_running[id].order.scale_ratio.scale_ratio}x -unsharp ${files_running[id].order.scale_down_unsharp} `
-          else if(files_running[id].order.scale_ratio.auto == false && files_running[id].process.scale_whichis == "height") files_running[id].process.resize_set = `-resize x${files_running[id].file.image.height * files_running[id].order.scale_ratio.scale_ratio} -unsharp ${files_running[id].order.scale_down_unsharp} `
-          else files_running[id].process.resize_set = `-resize 1200x1200 -unsharp ${files_running[id].order.scale_down_unsharp} `
+          if(files_running[id].order.scale_ratio.auto == true && files_running[id].process.scale_whichis == "width" && files_running[id].process.scale_ratio != 1) files_running[id].process.resize_set = `-resize ${files_running[id].order.scale_ratio.min_width}x -unsharp ${files_running[id].order.scale_down_unsharp} `
+          else if(files_running[id].order.scale_ratio.auto == true && files_running[id].process.scale_whichis == "height" && files_running[id].process.scale_ratio != 1) files_running[id].process.resize_set = `-resize x${files_running[id].order.scale_ratio.min_height} -unsharp ${files_running[id].order.scale_down_unsharp} `
+          else if(files_running[id].order.scale_ratio.auto == false && files_running[id].process.scale_whichis == "width" && files_running[id].process.scale_ratio != 1) files_running[id].process.resize_set = `-resize ${files_running[id].file.image.width * files_running[id].order.scale_ratio.scale_ratio}x -unsharp ${files_running[id].order.scale_down_unsharp} `
+          else if(files_running[id].order.scale_ratio.auto == false && files_running[id].process.scale_whichis == "height" && files_running[id].process.scale_ratio != 1) files_running[id].process.resize_set = `-resize x${files_running[id].file.image.height * files_running[id].order.scale_ratio.scale_ratio} -unsharp ${files_running[id].order.scale_down_unsharp} `
+          else if(files_running[id].order.scale_ratio.auto == true && files_running[id].process.scale_whichis == "width" && files_running[id].process.scale_ratio == 1) files_running[id].process.resize_set = `-resize ${files_running[id].order.scale_ratio.min_width}x `
+          else if(files_running[id].order.scale_ratio.auto == true && files_running[id].process.scale_whichis == "height" && files_running[id].process.scale_ratio == 1) files_running[id].process.resize_set = `-resize x${files_running[id].order.scale_ratio.min_height} `
+          else if(files_running[id].order.scale_ratio.auto == false && files_running[id].process.scale_whichis == "width" && files_running[id].process.scale_ratio == 1) files_running[id].process.resize_set = `-resize ${files_running[id].file.image.width * files_running[id].order.scale_ratio.scale_ratio}x `
+          else if(files_running[id].order.scale_ratio.auto == false && files_running[id].process.scale_whichis == "height" && files_running[id].process.scale_ratio == 1) files_running[id].process.resize_set = `-resize x${files_running[id].file.image.height * files_running[id].order.scale_ratio.scale_ratio} `
 
           try{
             fs.mkdirSync(dest_dir)
