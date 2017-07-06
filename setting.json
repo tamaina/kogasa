@@ -85,7 +85,7 @@
         "min_width": "200",
         "min_height": "0"
     },
-    "noise_level": "0",
+    "noise_level": "1",
     "auto_scale": true,
     "file_formats": {
         "png": {

@@ -594,7 +594,7 @@
 
             if(files_running[id].process.noise){
               timestamp = new Date()
-              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m noise ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --noise_level ${files_running[id].order.noise_level} --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[files_running[id].order.model.vendor].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
+              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m noise ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --noise_level ${files_running[id].order.noise_level} --model_dir ${w2xbin}models\\${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use}\\${files_running[id].order.model.vendors[files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
               files_running[id].process.log[timestamp.toISOString()] = execSync(command)
               files_running[id].process.t++
               if(DEBUG) console.log(command)
@@ -602,7 +602,7 @@
             }
             if( files_running[id].process.scale_ratio > 1 ){
               timestamp = new Date()
-              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m scale ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --scale_ratio 2 --model_dir ${w2xbin}models\\${files_running[id].order.model.vendor}\\${files_running[id].order.model.vendors[files_running[id].order.model.vendor].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
+              command = `${w2xbin}${files_running[id].order.waifu2x.use} -m scale ${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].more_option.replace("\n"," ")} --scale_ratio 2 --model_dir ${w2xbin}models\\${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use}\\${files_running[id].order.model.vendors[files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use].image_val} -i "${files_running[id].process.tmpdpnx}" -o "${files_running[id].process.tmpdpnx}"`
               files_running[id].process.log[timestamp.toISOString()] = execSync(command)
               files_running[id].process.t++
               if(DEBUG) console.log(command)
