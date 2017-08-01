@@ -562,6 +562,13 @@
           files_running[id].process.t = 0
           let dest = ""
           let dest_dir = ""
+          if(files_running[id].process.scale_ratio <= 1){
+            files_running[id].process.outname = `waifued_scale${files_running[id].process.scale_ratio}_${files_running[id].file.before.n}`
+          } else if(!files_running[id].process.noise) {
+            files_running[id].process.outname = `waifued_${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use}_${files_running[id].order.model.vendors[files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use].image_val}_noise0_scale${files_running[id].process.scale_ratio}_${files_running[id].file.before.n}`
+          } else {
+            files_running[id].process.outname = `waifued_${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use}_${files_running[id].order.model.vendors[files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use].image_val}_noise${files_running[id].order.noise_level}_scale${files_running[id].process.scale_ratio}_${files_running[id].file.before.n}`
+          }
           files_running[id].process.outname = `waifued_${files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use}_${files_running[id].order.model.vendors[files_running[id].order.waifu2x.binarys[files_running[id].order.waifu2x.use].model_use].image_val}_noise${files_running[id].order.noise_level}_scale${files_running[id].process.scale_ratio}_${files_running[id].file.before.n}`
           if(DEBUG) console.log(files_running[id].order.output.path)
           if(files_running[id].order.output.path == ""){
@@ -1006,10 +1013,6 @@
       }
       scale_auto_load()
       $("#scale_ratio").on("change",function(){
-        if($(this).val() < 1){
-          $(this).val(2).trigger("change")
-          return false
-        }
         setting.scale_ratio.scale_ratio = $(this).val()
         if($(this).val() == ""){
           setting.scale_ratio.scale_ratio = 0
@@ -1263,7 +1266,7 @@
                 <span class="mdl-textfield__error">%i18n:text.setting.scale.numerror%</span>
               </div>
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:100%">
-                <input class="mdl-textfield__input" type="text" pattern="([0-9]+[x]+[0-9]+(\+[0-9]+(\.[0-9]+)?)?(\+[0-9]+(\.[0-9]+)?)?)?" id="scale_down_unsharp">
+                <input class="mdl-textfield__input" type="text" pattern="(([0-9]+(\.[0-9]+)?[x]?)?([x]?[0-9]+(\.[0-9]+)?)?(\+[0-9]+(\.[0-9]+)?)?(\+[0-9]+(\.[0-9]+)?)?)?" id="scale_down_unsharp">
                 <label class="mdl-textfield__label" for="scale_down_unsharp">%i18n:text.setting.scaledown.unsharp%</label>
                 <span class="mdl-textfield__error">%i18n:text.setting.scaledown.typeerror%</span>
               </div>
