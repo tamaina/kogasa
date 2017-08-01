@@ -200,7 +200,7 @@
     },
     "output": {
         "path": "",
-        "file_format": "jpeg"
+        "file_format": "png"
     },
     "parallel": "1",
     "log": [
