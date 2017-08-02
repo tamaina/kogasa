@@ -264,11 +264,12 @@
 
     if(setting.temp.path != "") temp = setting.temp.path
     if(setting.temp.ext != "") tmp_ext = setting.temp.ext
-
-    if(DEBUG) console.log(setting)
-      let savedata = require(setting_path)
-    if(DEBUG) console.log(savedata)
-      setting = nextend(setting,savedata)
+    try{
+      if(DEBUG) console.log(setting)
+        let savedata = require(setting_path)
+      if(DEBUG) console.log(savedata)
+        setting = nextend(setting,savedata)
+    } catch(e){}
       
     if(DEBUG) console.log(setting)
   
