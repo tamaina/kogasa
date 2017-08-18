@@ -1,5 +1,7 @@
 # KOGASA
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/tamaina/kogasa.svg)](https://greenkeeper.io/)
+
 こがさ: electronで超モダンなwaifu2xをあなたに
 
 ----
