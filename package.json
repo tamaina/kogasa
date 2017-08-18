@@ -24,6 +24,6 @@
     "electron": "^1.6.10",
     "electron-packager": "^8.7.0",
     "extend": "^3.0.1",
-    "tmp": "0.0.31"
+    "tmp": "0.0.33"
   }
 }
