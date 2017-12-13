@@ -15,10 +15,10 @@
                     "upconv_7": true,
                     "vgg_7": true
                 },
-                "model_use": "upconv_7"
+                "model_use": "vgg_7"
             }
         },
-        "use": "waifu2x-caffe-cui"
+        "use": "waifu2x-converter-cpp"
     },
     "model": {
         "vendors": {
@@ -50,7 +50,7 @@
                         }
                     }
                 ],
-                "image_val": "art"
+                "image_val": "photo"
             },
             "upconv_7": {
                 "description": {
@@ -73,19 +73,19 @@
                         }
                     }
                 ],
-                "image_val": "art"
+                "image_val": "photo"
             }
         }
     },
     "scale_ratio": {
         "auto": false,
-        "scale_ratio": "2",
+        "scale_ratio": "1",
         "max_width": 1920,
         "max_height": 1080,
-        "min_width": "1280",
-        "min_height": "720"
+        "min_width": "1600",
+        "min_height": "1600"
     },
-    "noise_level": "1",
+    "noise_level": "0",
     "auto_scale": true,
     "file_formats": {
         "png": {
@@ -183,7 +183,7 @@
             "extentions": [
                 "webp"
             ],
-            "output_option": "-lossless"
+            "output_option": ""
         },
         "mp4": {
             "enable": true,
@@ -200,7 +200,7 @@
     },
     "output": {
         "path": "",
-        "file_format": "png"
+        "file_format": "webp"
     },
     "parallel": "1",
     "log": [
@@ -208,7 +208,7 @@
             "2017-07-02T14:09:59.910Z"
         ]
     ],
-    "scale_down_ratio": "1",
+    "scale_down_ratio": 1,
     "scale_down_unsharp": "0x0.75+0.75+0.008",
     "temp": {
         "path": "",
